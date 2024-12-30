@@ -1,0 +1,180 @@
+<template>
+    <template for:each={productData} for:item="productInfo" for:index="index">
+        <lightning-card class="slds-p-top_none" key={productInfo.index}>
+
+            <div class="slds-m-top_large main-container">
+
+                <div class="slds-p-around_small heading slds-grid slds-grid_align-spread">
+                    <div class="slds-col">
+                        <h1 class="slds-text-title_bold">Item {productInfo.index}</h1>
+                    </div>
+                    <div class="slds-col">
+                        <button onclick={handleCross} data-id={productInfo.product_id} data-index={productInfo.index}
+                            class="slds-button slds-button_destructive">X</button>
+                    </div>
+                </div>
+
+                <div class="slds-p-around_small slds-p-top_none slds-p-bottom_none">
+                    <div class="slds-size_1-of-2">
+                        <lightning-combobox name="progress" label="Product" data-index={productInfo.index}
+                            value={productInfo.product_id} data-id={productInfo.product_id}
+                            placeholder="Choose Product..." options={accountOptions}
+                            onchange={handleChange}></lightning-combobox>
+                    </div>
+
+                    <div class="slds-size_1-of-5 slds-p-top_medium">
+                        <p>Quantity</p>
+                        <input type="number" class="quantity" data-index={productInfo.index} onchange={handleQtyChange}
+                            value={productInfo.quantity} name="quantity" min="1" max="10">
+
+                    </div>
+                </div>
+
+                <div class="slds-grid slds-gutters slds-p-around_medium">
+                    <!-- Subtotal Section -->
+                    <div class="slds-col slds-size_1-of-8">
+                        <div class="slds-text-title_bold">Subtotal</div>
+                        <div class="slds-text-body_medium">{productInfo.subtotal}</div>
+                    </div>
+
+                    <!-- Discount for Receipt Section -->
+                    <div class="slds-col slds-size_1-of-6">
+                        <div class="slds-text-title_bold">Discount for Receipt</div>
+                        <div class="slds-text-body_medium">$0</div>
+                    </div>
+                </div>
+            </div>
+        </lightning-card>
+
+    </template>
+
+    <div class="slds-m-top_small add-product-btn">
+
+        <lightning-button variant="success" label="+ Add Product" title="Successful action" onclick={addProduct}
+            class="slds-m-left_x-small add-product-btn"></lightning-button>
+    </div>
+
+    <lightning-card>
+        <div class="price-details"><strong>Price Details</strong></div>
+        <div class="slds-m-around_medium main-container-price-details">
+            <!-- Section 1: Products -->
+            <div class="section">
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-col slds-size_1-of-2">
+                        <div class="label-value">
+                            <p class="label"><strong>Products</strong></p>
+                            <p class="value"><strong>{data.totalProduct}</strong></p>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <div class="label-value">
+                            <p class="label"><strong>Total Products</strong></p>
+                            <p class="value"><strong>{data.productCount}</strong></p>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-6">
+                        <div class="label-value">
+                            <p class="label"><strong>Sub Total</strong></p>
+                            <p class="value"><strong>$ {data.subtotal}</strong></p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <hr />
+
+            <!-- Section 2: Shipping -->
+            <div class="section">
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-col slds-size_1-of-2">
+                        <label><strong>Shipping Method</strong></label>
+                        <div class="input-fields">
+                            <lightning-combobox name="shippingMethod" value={data.selectedShippingMethod}
+                                options={shippingOptions} onchange={handleShippingChange}>
+                            </lightning-combobox>
+                        </div>
+
+                        <p class="slds-m-top_small description">{data.shippingDescription}</p>
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <div class="label-value">
+                            <p class="label"><strong>Total Weight</strong></p>
+                            <p class="value"><strong>{data.totalWeight}</strong></p>
+                        </div>
+
+                    </div>
+                    <div class="slds-col slds-size_1-of-6">
+                        <div class="label-value">
+                            <p class="label"><strong>Estimated Shipping Price</strong></p>
+                            <p class="value"><strong>$ {data.selectedShippingPrice}</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+
+            <!-- Section 3: Discount -->
+            <div class="section total-amount-section">
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-col slds-size_1-of-2">
+                        <label><strong>Sales Tax Rate</strong></label>
+                        <div class="input-fields description">
+                            <lightning-input type="number" value={data.salesTaxRate} onchange={handleTaxChange}>
+                            </lightning-input>
+                            <p class="slds-m-top_small sales-price-description">Sales tax is estimated by state. If you
+                                need a more precise percentage, you can submit this quote to an order and Customer
+                                Service will create a ProForma (offical system quote) for the customer. You can manually
+                                enter a more precise percentage. If a percentage other than 0% is pre- populated, then
+                                tax should be collected for this order. Tax should never be zeroed out unless you can
+                                provide a tax exempt certificate</p>
+                        </div>
+
+                    </div>
+                    <div class="slds-col slds-size_1-of-3"></div>
+                    <div class="slds-col slds-size_1-of-6">
+                        <div class="label-value">
+                            <p class="label"><strong>Estimated Tax</strong></p>
+                            <p class="value"><strong>$ {data.estimatedTax}</strong></p>
+                        </div>
+
+                    </div>
+                </div>
+                <hr />
+                <div class="slds-grid slds-wrap slds-m-top_medium">
+                    <div class="slds-col slds-size_1-of-2">
+                        <label><strong>Discount</strong></label>
+                        <div class="input-fields description">
+                            <lightning-combobox name="discount" value={data.selectedDiscountPercentage}
+                                options={data.discountOptions} onchange={handleDiscountChange}>
+                            </lightning-combobox>
+                        </div>
+
+                    </div>
+                    <div class="slds-size_1-of-3"></div>
+                    <div class="slds-col slds-size_1-of-6">
+                        <div class="label-value">
+                            <p class="label"><strong>Discount Amount</strong></p>
+                            <p class="value"><strong>$ {data.discountAmount}</strong></p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Total -->
+            <div class="section  slds-grid slds-wrap">
+                <div class="slds-col slds-size_1-of-2"></div>
+                <div class="label-value slds-col slds-size_1-of-3">
+                    <p class="label"><strong>Handling Fee</strong></p>
+                    <p class="value"><strong>$ {data.handlingFee}</strong></p>
+                </div>
+                <div class="label-value slds-col slds-size_1-of-6">
+                    <p class="label"><strong>Amount with Discount</strong></p>
+                    <p class="value"><strong>$ {data.totalPrice}</strong></p>
+                </div>
+
+            </div>
+
+        </div>
+    </lightning-card>
+</template>

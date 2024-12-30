@@ -1,0 +1,27 @@
+<template>
+    <!-- Next and Previous Buttons -->
+    <div class="slds-grid slds-grid_align-end slds-m-horizontal_medium">
+
+        <template lwc:if={first}>
+        </template>
+        <template lwc:else>
+            <div class="slds-col">
+                <lightning-button class="slds-p-horizontal_x-small" label="Previous" variant="brand"
+                    onclick={handlePrevious} disabled={isbuttondisabled} icon-name="utility:left"></lightning-button>
+            </div>
+
+        </template>
+        <template lwc:if={step}>
+            <div class="slds-col">
+                <lightning-button class="slds-p-horizontal_x-small" label="Submit" onclick={handleSubmit}
+                    variant="brand" icon-name="utility:right"></lightning-button>
+            </div>
+        </template>
+        <template lwc:else>
+            <div class="slds-col">
+                <lightning-button class="slds-p-horizontal_x-small" label="Next" onclick={handleNext} variant="brand"
+                    icon-name="utility:right" disabled={isnextbuttondisabled}></lightning-button>
+            </div>
+        </template>
+    </div>
+</template>

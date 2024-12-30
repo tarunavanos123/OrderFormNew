@@ -1,0 +1,87 @@
+.summary-container {
+    width: 90%;
+    margin: auto;
+    padding: 16px;
+}
+
+.invoice-container {
+    font-family: Arial, sans-serif;
+}
+
+.slds-p-bottom_x-small,
+.slds-p-top_x-small {
+    margin-bottom: 0.5rem;
+}
+
+.slds-p-left-samall {
+    margin-left: 0.5rem;
+}
+
+.slds-m-top_medium {
+    margin-top: 1.5rem;
+}
+
+.slds-table th,
+.slds-table td {
+    text-align: left;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+}
+
+button {
+    padding: 10px 20px;
+}
+
+
+.label-value {
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.label {
+    margin: 0;
+}
+
+.value {
+    margin: 0;
+    font-weight: bold;
+}
+
+.custom-table thead th {
+    background: none;
+    padding: 10px 0.75rem;
+}
+
+.header-divider {
+    border: 0;
+    margin: 0;
+    border-top: 1px solid #d8dde6;
+    padding: 10px 0.75rem;
+}
+
+.custom-row {
+    height: 30px;
+}
+
+.custom-table tr>th, .custom-table tr>td {
+    text-align: center;
+}
+
+.custom-row td {
+    padding: 10px 0.75rem;
+}
+
+.custom-table tr>th:first-child,
+.custom-table tr>td:first-child{
+    padding: 0;
+    text-align: left;
+}
+
+.custom-table tr>th:last-child,
+.custom-table tr>td:last-child {
+    padding: 0;
+    text-align: right;
+}

@@ -1,0 +1,53 @@
+<template>
+
+    <div class="slds-m-around_xx-large">
+        <div class="slds-m-vertical_x-large">
+            <div class="name-text slds-m-vertical_x-small">
+                <span class="asterisk">*</span><strong>Customer Type</strong>
+            </div>
+            <lightning-button-group>
+                <lightning-button label="New Customer" onclick={newHandleClick}
+                    variant={newCustomerVariant}></lightning-button>
+                <lightning-button label="Existing Customer" onclick={regHandleClick}
+                    variant={registerCustomerVariant}></lightning-button>
+            </lightning-button-group>
+        </div>
+
+
+        <template lwc:if={isRegisterCustomer}>
+            <div class="slds-col slds-size_3-of-12">
+                <p><strong>Customer Lookup</strong></p>
+                <lightning-input value={searchTerm} variant="label-hidden" onchange={handleSearchChange}
+                    oncommit={handleClear} placeholder="Search for Account..."
+                    class="search-input slds-col slds-size_3-of-12 slds-input__icon_right" type="search">
+                </lightning-input>
+
+                <template if:true={isLoading}>
+                    <lightning-spinner alternative-text="Loading..." size="small"></lightning-spinner>
+                </template>
+
+                <template if:true={isDropdownVisible}>
+                    <div class="dropdown slds-col slds-size_3of-12">
+                        <template if:true={records.length}>
+                            <ul class="dropdown-list slds-input">
+                                <template for:each={records} for:item="record">
+                                    <li key={record.Id} data-id={record.Id} data-name={record.Name}
+                                        data-record={record.Name} onclick={handleRecordSelect} class="dropdown-item">
+                                        {record.Name}
+                                    </li>
+                                </template>
+                            </ul>
+                        </template>
+                    </div>
+                </template>
+
+                <template if:true={selectedRecordName}>
+                    <div class="selected-record">
+                        <p><strong>Selected Record:</strong> {selectedRecordName}</p>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </div>
+
+</template>

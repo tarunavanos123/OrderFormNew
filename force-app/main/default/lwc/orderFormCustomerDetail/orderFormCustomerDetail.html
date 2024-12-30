@@ -1,0 +1,251 @@
+<template>
+
+    <lightning-card>
+        <div class="form-container">
+            <!-- Row 1: Company Name and PO # -->
+            <div class="form-row">
+                <template if:false={isReadOnly}>
+                    <lightning-combobox label="Customer Trade Class" placeholder="Select Customer Trade Class"
+                        class="input-width" data-id="CustomerTradeClass" value={customer.CustomerTradeClass}
+                        options={customerTradeClassOptions} onchange={handleInputChange} readonly={isReadOnly}>
+                    </lightning-combobox>
+                </template>
+                <template if:true={isReadOnly}>
+                    <div>
+                        <p>Customer Trade Class</p>
+                        <p>{customer.CustomerTradeClass}</p>
+                    </div>
+
+                </template>
+
+                <template if:false={isReadOnly}>
+                    <lightning-input label="PO #" type="text" data-id="PO" value={customer.PO}
+                        onchange={handleInputChange} class="input-width" readonly={isReadOnly}>
+                    </lightning-input>
+                </template>
+
+                <template if:true={isReadOnly}>
+                    <div>
+                        <p>PO #</p>
+                        <p>{customer.PO}</p>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Row 2: Customer Type -->
+            <div class="form-row">
+                <template if:false={isReadOnly}>
+                    <lightning-input label="Company Name" data-id="CompanyName" type="text" value={customer.CompanyName}
+                        class="input-width" onchange={handleInputChange} readonly={isReadOnly}>
+                    </lightning-input>
+                </template>
+                <template if:true={isReadOnly}>
+                    <div>
+                        <p>Company Name</p>
+                        <p>{customer.CompanyName}</p>
+                    </div>
+                </template>
+
+                <template if:false={isReadOnly}>
+                    <lightning-input type="checkbox" label="Without Rx?" data-id="WithoutRx"
+                        checked={customer.WithoutRx} onchange={handleCheckboxChange} disabled={isReadOnly}>
+                    </lightning-input>
+
+                </template>
+                <template if:true={isReadOnly}>
+                    <div>
+                        <p>Without Rx?</p>
+                        <p>No</p>
+                    </div>
+                </template>
+
+
+            </div>
+
+            <!-- *Name text before Salutation -->
+            <div class="name-text slds-m-top_medium">
+                <span class="asterisk">*</span><strong>Name</strong>
+            </div>
+
+            <!-- Row 3: Salutation and Email -->
+            <div class="form-row">
+                <template if:false={isReadOnly}>
+                    <lightning-combobox label="Salutation" data-id="Salutation" value={customer.Salutation}
+                        class="input-width" options={salutationOptions} onchange={handleInputChange}
+                        readonly={isReadOnly}>
+                    </lightning-combobox>
+                </template>
+                <template if:true={isReadOnly}>
+                    <div>
+                        <p>Salutation</p>
+                        <p>{customer.Salutation}</p>
+                    </div>
+                </template>
+
+                <template if:false={isReadOnly}>
+                    <lightning-input label="Email" type="email" data-id="Email" data-group="formInput"
+                        class="input-width" value={customer.Email} onchange={handleInputChange} readonly={isReadOnly}>
+                    </lightning-input>
+                </template>
+                <template if:true={isReadOnly}>
+                    <div>
+                        <p>Email</p>
+                        <p>{customer.Email}</p>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Row 4: First Name and Phone -->
+            <div class="form-row">
+                <template if:false={isReadOnly}>
+                    <lightning-input label="First Name" type="text" placeholder="First Name" data-id="FirstName"
+                        value={customer.FirstName} onchange={handleInputChange} readonly={isReadOnly}
+                        class="input-width">
+                    </lightning-input>
+                </template>
+                <template if:true={isReadOnly}>
+                    <div>
+                        <p>First Name</p>
+                        <p>{customer.FirstName}</p>
+                    </div>
+                </template>
+                <template if:false={isReadOnly}>
+                    <lightning-input label="Phone" type="tel" data-id="Phone" value={customer.Phone} class="input-width"
+                        onchange={handleInputChange} readonly={isReadOnly}>
+                    </lightning-input>
+                </template>
+                <template if:true={isReadOnly}>
+                    <div>
+                        <p>Phone</p>
+                        <p>{customer.Phone}</p>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Row 5: Last Name and Fax -->
+            <div class="form-row">
+                <template if:false={isReadOnly}>
+                    <lightning-input label="Last Name" class="input-width" type="text" placeholder="Last Name"
+                        data-id="LastName" data-group="formInput" value={customer.LastName} onchange={handleInputChange}
+                        required readonly={isReadOnly}>
+                    </lightning-input>
+                </template>
+                <template if:true={isReadOnly}>
+                    <div>
+                        <p>Last Name</p>
+                        <p>{customer.LastName}</p>
+                    </div>
+                </template>
+                <template if:false={isReadOnly}>
+                    <lightning-input label="Fax" class="input-width" type="text" data-id="Fax" value={customer.Fax}
+                        onchange={handleInputChange} readonly={isReadOnly}>
+                    </lightning-input>
+                </template>
+                <template if:true={isReadOnly}>
+                    <div>
+                        <p>Fax</p>
+                        <p>{customer.Fax}</p>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Address text  -->
+
+            <div class="slds-m-top_large form-row">
+
+                <div class="label-text address">
+                    <strong>Address</strong>
+                </div>
+                <lightning-input type="checkbox" data-id="SameAddress" label="Shipping address same as Billing"
+                    checked={customer.SameAddress} onchange={handleAdressCheckboxChange} class="input-width">
+                </lightning-input>
+            </div>
+
+
+            <!--Row 7: Address Street-->
+            <div class="form-row">
+
+                <template if:false={isReadOnly}>
+                    <textarea rows="1" label="Street" data-id="Street" type="text"
+                        value={customer.ShippingAddress.Street} class="shippingAddress slds-textarea input-width"
+                        onchange={handleInputChange} readonly={isReadOnly}></textarea>
+                </template>
+                <template if:true={isReadOnly}>
+                    <div>
+                        <p>Street</p>
+                        <p>{customer.ShippingAddress.Street}</p>
+                    </div>
+                </template>
+
+                <template if:false={customer.SameAddress}>
+                    <textarea rows="1" label="Street" data-id="Street" type="text"
+                        value={customer.BillingAddress.Street} class="billingAddress slds-textarea input-width"
+                        onchange={handleInputChange} readonly={isReadOnly}></textarea>
+
+                </template>
+            </div>
+
+            <!--Row 7: Address City-->
+            <div class="form-row">
+                <template if:false={isReadOnly}>
+                    <lightning-input label="City" type="text" data-id="City" value={customer.ShippingAddress.City}
+                        class="shippingAddress input-width" onchange={handleInputChange} readonly={isReadOnly}>
+                    </lightning-input>
+                </template>
+
+                <template if:true={isReadOnly}>
+                    <div>
+                        <p>City</p>
+                        <p>{customer.ShippingAddress.City}</p>
+                    </div>
+                </template>
+
+                <template if:false={customer.SameAddress}>
+                    <lightning-input label="City" type="text" data-id="City" value={customer.BillingAddress.City}
+                        class="billingAddress input-width" onchange={handleInputChange}>
+                    </lightning-input>
+                </template>
+            </div>
+
+
+            <!--Row 7: Address Zipcodde and state-->
+            <div class="form-row">
+                <div class="form-row multiple-input">
+                    <template if:false={isReadOnly}>
+                        <lightning-input label="Zip/Postal Code" data-id="ZipCode" type="text"
+                            value={customer.BillingAddress.ZipCode} class="billingAddress" onchange={handleInputChange}>
+                        </lightning-input>
+
+                        <lightning-input label="State/Province" data-id="State" type="text"
+                            value={customer.BillingAddress.State} class="billingAddress" onchange={handleInputChange}>
+                        </lightning-input>
+                    </template>
+
+                    <template if:true={isReadOnly}>
+                        <div>
+                            <p>Zip/Postal Code</p>
+                            <p>{customer.ShippingAddress.ZipCode}</p>
+                        </div>
+                        <div>
+                            <p>State/Province</p>
+                            <p>{customer.ShippingAddress.State}</p>
+                        </div>
+                    </template>
+                </div>
+
+                <template if:false={customer.SameAddress}>
+                    <div class="form-row multiple-input">
+                        <lightning-input label="Zip/Postal Code" data-id="ZipCode" type="text"
+                            value={customer.BillingAddress.ZipCode} class="billingAddress" onchange={handleInputChange}>
+                        </lightning-input>
+
+                        <lightning-input label="State/Province" data-id="State" type="text"
+                            value={customer.BillingAddress.State} class="billingAddress" onchange={handleInputChange}>
+                        </lightning-input>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </lightning-card>
+
+</template>

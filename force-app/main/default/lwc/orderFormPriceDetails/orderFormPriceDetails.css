@@ -1,0 +1,98 @@
+.section {
+    margin-bottom: 1rem;
+}
+
+.main-container-price-details {
+    margin: 36px;
+    font-size: 15px;
+}
+
+.add-product-btn {
+    margin-left: 20px;
+    margin-bottom: 8px;
+    margin-top:10px
+}
+
+.price-details {
+    margin-left: 36px;
+    font-size: 24px;
+}
+
+.input-fields {
+    width: 80%;
+}
+
+.sales-price-description {
+    font-size: 11px;
+}
+
+.description {
+    width: 65%;
+}
+
+.total-amount-section {
+    margin-bottom: 64px;
+}
+
+.line-height {
+    width: 100px;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #d8dde6;
+    margin: 1rem 0;
+}
+
+.slds-m-top_small {
+    margin-top: 0.5rem;
+}
+
+.slds-m-top_medium {
+    margin-top: 1rem;
+}
+
+.label-value {
+    text-align: left;
+    margin-bottom: 1rem; 
+}
+
+.label {
+    margin: 0; 
+}
+
+.value {
+    margin: 0;
+    font-weight: bold; 
+}
+
+.slds-card__header  {
+    padding: 0;
+    margin: 0;
+}
+
+.quantity {
+    width: 65%;
+    height: 25px;
+}
+
+.main-container {
+    
+    box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.1); 
+    border-top: 2px solid #ddd; 
+    border-left: 2px solid #ddd; 
+    border-radius: 8px; 
+    background-color: #fff; 
+    padding: 16px; 
+    margin: 32px;
+    margin-top: 0;
+}
+
+.heading {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.slds-card__body {
+    margin: 0;
+}

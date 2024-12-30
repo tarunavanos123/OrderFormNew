@@ -1,0 +1,26 @@
+<template>
+    <lightning-card class="slds-m-around_small slds-p-horizontal_large">
+        <div class="slds-p-horizontal_large">
+            <lightning-progress-indicator current-step={step} type="path" variant="base">
+                <template for:each={status} for:item="stepItem">
+                    <lightning-progress-step onclick={handleProgress} key={stepItem.value} label={stepItem.label}
+                        value={stepItem.value}>
+                    </lightning-progress-step>
+                </template>
+            </lightning-progress-indicator>
+        </div>
+
+        <template if:true={isStep1}> <c-order-form-customer-type
+                onrecordevent={handleRecordID}></c-order-form-customer-type> </template>
+        <template if:true={isStep2}> <c-order-form-customer-detail onformvalidation={handleFormValidation}
+                currentrecord={currentRecordID}></c-order-form-customer-detail> </template>
+        <template if:true={isStep3}> <c-order-form-price-details
+                onproductvalidation={handleProductValidation}></c-order-form-price-details> </template>
+        <template if:true={isStep4}> <c-order-form-upload-document></c-order-form-upload-document> </template>
+        <template if:true={isStep5}> <c-order-form-summary></c-order-form-summary> </template>
+
+        <c-order-form-footer onprevious={handlePrevious} first={isStep1} step={isStep5} onnext={handleNext}
+            isbuttondisabled={isButtonDisable} istoshow={isToShow}
+            isnextbuttondisabled={isNextButtonDisabled}></c-order-form-footer>
+    </lightning-card>
+</template>
