@@ -141,9 +141,9 @@ export default class CustomerPage extends LightningElement {
                 this.enableNextButton = true;
                 const recordIdEvent = new CustomEvent('recordevent',{ detail: { 'accountId': this.accountId,'showNextButton': this.enableNextButton,'fromCustomerTypeForm': false } });
                 if (parsedJson.customerName) {
-                    this.searchTerm = parsedJson.customerName; 
+                    this.searchTerm = parsedJson.customerName;
                 }
-                this.dispatchEvent(recordIdEvent); 
+                this.dispatchEvent(recordIdEvent);
             }
         }
         document.addEventListener('click',this.handleClickOutside.bind(this));
