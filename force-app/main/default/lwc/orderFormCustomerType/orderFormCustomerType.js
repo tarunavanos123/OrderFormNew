@@ -138,12 +138,12 @@ export default class CustomerPage extends LightningElement {
             }
             if (parsedJson?.customerName) {
                 this.accountId = parsedJson.customerId;
-                this.enableNextButton = true; // sumit
-                const recordIdEvent = new CustomEvent('recordevent',{ detail: { 'accountId': this.accountId,'showNextButton': this.enableNextButton,'fromCustomerTypeForm': false } }); // sumit
+                this.enableNextButton = true;
+                const recordIdEvent = new CustomEvent('recordevent',{ detail: { 'accountId': this.accountId,'showNextButton': this.enableNextButton,'fromCustomerTypeForm': false } });
                 if (parsedJson.customerName) {
-                    this.searchTerm = parsedJson.customerName; // sumit
+                    this.searchTerm = parsedJson.customerName; 
                 }
-                this.dispatchEvent(recordIdEvent); // sumit
+                this.dispatchEvent(recordIdEvent); 
             }
         }
         document.addEventListener('click',this.handleClickOutside.bind(this));
