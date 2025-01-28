@@ -7,9 +7,9 @@ import { refreshApex } from '@salesforce/apex';
 import {NavigationMixin} from 'lightning/navigation';
 
 export default class UploadFiles extends NavigationMixin(LightningElement) {
-    @api prescriptionFiles = [];
-    @api discountFiles = [];
-    @api taxExemptFiles = [];
+    // @api prescriptionFiles = [];
+    // @api discountFiles = [];
+    // @api taxExemptFiles = [];
     @api recordId;
     @track wiredPrescriptionResult;
     @track wiredDiscountResult;
@@ -25,6 +25,24 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
         let jsonData = sessionStorage.getItem('orderFormData');
         this.orderFormId = JSON.parse(jsonData).orderFormId;
     }
+
+    connectedCallback() {
+       
+        const staticStepStatus = {
+            step1: true,
+            step2: true,
+            step3: true,
+            step4: false,
+            step5: false
+        };
+        const stepUpdateEvent = new CustomEvent('stepupdate', {
+            detail: { staticStepStatus }
+        });
+
+        this.dispatchEvent(stepUpdateEvent);
+
+    }
+
 
     @track data = {
         prescriptionFiles: '',

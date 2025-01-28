@@ -1,35 +1,21 @@
+.avanosLogo {
+    width: 150px; 
+    height: auto; 
+    margin-left: 40px auto;
+}
+
+.button-container {
+    display: flex; 
+    justify-content: center; 
+    gap: 20px; 
+    margin-top: 20px;
+}
+
 .summary-container {
     width: 90%;
     margin: auto;
     padding: 16px;
 }
-
-.desktop-show{
-    display: block;
-}
-.mobile-show{
-    display: none;
-}  
-
-@media screen and (max-width: 768px) { 
-    .summary-container .slds-grid .slds-col {
-        min-width: 320px; 
-    }
-
-    .desktop-show{
-        display: none;
-    }
-    .mobile-show{
-        display: block;
-    }   
-
-}
-
-.table-data{
-    text-wrap: auto;
-}
- 
-
 
 .invoice-container {
     font-family: Arial, sans-serif;
@@ -55,7 +41,7 @@
 
 textarea {
     width: 100%;
-    height: 100px;
+    height: 200px;
 }
 
 button {
@@ -95,8 +81,6 @@ button {
 
 .custom-table tr>th, .custom-table tr>td {
     text-align: center;
-    max-width: 100px;
-
 }
 
 .custom-row td {
@@ -113,4 +97,22 @@ button {
 .custom-table tr>td:last-child {
     padding: 0;
     text-align: right;
+}
+
+.signature-canvas {
+    border: 1px solid #939393;
+    width: 100%;
+    height: 100; /* Set a fixed height for the canvas */
+}
+
+.thank-you-container {
+  padding: 10px 20px;
+  justify-content: center;
+  align-items: center;
+  height: 30vh;
+}
+.message {
+  padding: 10px 20px;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
 }

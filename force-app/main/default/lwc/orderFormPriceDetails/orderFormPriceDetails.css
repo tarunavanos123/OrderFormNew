@@ -77,7 +77,6 @@ hr {
 }
 
 .main-container {
-    
     box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.1); 
     border-top: 2px solid #ddd; 
     border-left: 2px solid #ddd; 
@@ -95,4 +94,21 @@ hr {
 
 .slds-card__body {
     margin: 0;
+}
+
+.display-flex {
+    display: flex;
+}
+
+.input-height {
+    height: 30px;
+}
+
+.text-bold {
+    font-weight: bold;
+}
+
+.asterisk {
+    color: red;
+    font-weight: bold;
 }

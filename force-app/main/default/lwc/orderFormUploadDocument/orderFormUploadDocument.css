@@ -77,3 +77,7 @@ hr {
     white-space: nowrap;     /* Prevents wrapping to the next line */
     text-overflow: ellipsis; /* Displays an ellipsis (...) for overflowed text */
 }
+
+.gap-wrapper {
+    gap: 0.5rem;
+}

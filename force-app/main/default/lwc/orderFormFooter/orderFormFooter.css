@@ -1,0 +1,5 @@
+.custom-button {
+    --lwc-brandAccessible: #00a1e0;
+    --sds-c-button-brand-color-background: #00a1e0;
+    --slds-c-button-color-background: #00a1e0;
+}

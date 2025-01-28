@@ -3,9 +3,27 @@ public with sharing class OrderForm {
 
     @AuraEnabled(cacheable=true)
     public static List<Product2> fetchProduct() {
-        return [SELECT Id, Name FROM Product2 LIMIT 10];
+        return [SELECT Id, Name,SBQQ__ConfigurationType__c FROM Product2 LIMIT 10];
     }
 
+    @AuraEnabled
+    public static List<SBQQ__ProductOption__c> fetchProductOptions(Id productId) {
+        system.debug('productId' +  productId);
+        List<SBQQ__ProductOption__c> listName = [SELECT Id, Name, SBQQ__ConfiguredSKU__c FROM SBQQ__ProductOption__c WHERE SBQQ__ConfiguredSKU__c = :productId];
+        system.debug('productId' +  listName);
+
+        return [SELECT Id, Name, SBQQ__OptionalSKU__c, SBQQ__ConfiguredSKU__c, SBQQ__Required__c, SBQQ__Selected__c FROM SBQQ__ProductOption__c WHERE SBQQ__ConfiguredSKU__c = :productId];
+    }
+
+    @AuraEnabled
+    public static List<SBQQ__ProductOption__c> fetchSecondLevelProductOptions(Id productId) {
+        system.debug('productId2' +  productId);
+        List<SBQQ__ProductOption__c> listName = [SELECT Id, Name, SBQQ__ConfiguredSKU__c, SBQQ__OptionalSKU__c FROM SBQQ__ProductOption__c WHERE id = :productId];
+        system.debug('productId1' +  listName[0].SBQQ__OptionalSKU__c);
+
+        return [SELECT Id, Name, SBQQ__OptionalSKU__c, SBQQ__ConfiguredSKU__c, SBQQ__Required__c, SBQQ__Selected__c FROM SBQQ__ProductOption__c WHERE SBQQ__ConfiguredSKU__c = :listName[0].SBQQ__OptionalSKU__c];
+    }
+    
     @AuraEnabled
     public static void submitOrderForm(String orderFormId) {
 
@@ -46,6 +64,9 @@ public with sharing class OrderForm {
             Map<String, Object> customerDetails = (Map<String, Object>) customerInformation.get('CustomerData');
             Map<String, Object> ShippingAddress = (Map<String, Object>) customerDetails.get('ShippingAddress');
             Map<String, Object> BillingAddress = (Map<String, Object>) customerDetails.get('BillingAddress');
+            System.debug('BillingAddress ' + BillingAddress);
+            System.debug('ShippingAddress ' + ShippingAddress);
+
 
             String CustomerTradeClass = (String) customerDetails.get('CustomerTradeClass');
             String po = (String) customerDetails.get('PO');
@@ -57,15 +78,20 @@ public with sharing class OrderForm {
             String Email = (String) customerDetails.get('Email');
             String Phone = (String) customerDetails.get('Phone');
             String Fax = (String) customerDetails.get('Fax');
-            String state = (String) ShippingAddress.get('State');
-            String Street = (String) ShippingAddress.get('Street');
-            String ZipCode = (String) ShippingAddress.get('ZipCode');
-            String City = (String) ShippingAddress.get('City');
+            String state = (String) ShippingAddress.get('shippingState');
+            String Street = (String) ShippingAddress.get('shippingStreet');
+            String ZipCode = (String) ShippingAddress.get('shippingZipCode');
+            String City = (String) ShippingAddress.get('shippingCity');
 
-            String BillingState = (String) BillingAddress.get('State');
-            String BillingStreet = (String) BillingAddress.get('Street');
-            String BillingZipCode = (String) BillingAddress.get('ZipCode');
-            String BillingCity = (String) BillingAddress.get('City');
+            system.debug('sbilli' + Street + '' + state + '' + ZipCode);
+
+
+            String BillingState = (String) BillingAddress.get('billingState');
+            String BillingStreet = (String) BillingAddress.get('billingStreet');
+            String BillingZipCode = (String) BillingAddress.get('billingZipCode');
+            String BillingCity = (String) BillingAddress.get('billingCity');
+
+            system.debug('billi' + BillingState + '' + BillingStreet + '' + BillingZipCode);
 
             if (!isOrderAlreadyCreated) {
                 Order_Form__c orderFormRecord = new Order_Form__c();
@@ -92,6 +118,8 @@ public with sharing class OrderForm {
                 orderFormRecord.Billing_Street__c = BillingStreet;
                 orderFormRecord.Billing_Zip_Postal_Code__c = BillingZipCode;
                 orderFormRecord.Billing_City__c = BillingCity;
+
+                System.debug('orderFormRecord' + orderFormRecord);
 
                 try {
                     insert orderFormRecord;
@@ -126,6 +154,9 @@ public with sharing class OrderForm {
                 orderForm[0].Billing_Street__c = BillingStreet;
                 orderForm[0].Billing_Zip_Postal_Code__c = BillingZipCode;
                 orderForm[0].Billing_City__c = BillingCity;
+
+                System.debug('orderForm' + orderForm);
+
                 try {
                     update orderForm;
                 } catch (DmlException ex) {
@@ -140,6 +171,99 @@ public with sharing class OrderForm {
     }
 
     @AuraEnabled
+    public static void updateProductOption(String productDetails, String orderFormId) {
+        Id recordId = Id.valueOf(orderFormId);
+
+        Set<ID> ExistingproductIds = new Set<ID>();
+        Map<String, Boolean> productData = new Map<String, Boolean>();
+
+        List<order_form_product__c> existingProductRecords = [Select Product__c from order_form_product__c where Order_Form__c =: orderFormId];
+
+
+
+        List<ProductWrapperOption> products = (List<ProductWrapperOption>) JSON.deserialize(productDetails, List<ProductWrapperOption>.class);
+
+        for (ProductWrapperOption prod : products) {
+            productData.put(prod.sku, prod.selected);
+
+        }
+
+        System.debug('productData ' + productData);
+
+        List<order_form_product__c> productsToDelete = new List<order_form_product__c>();
+
+
+        for (order_form_product__c prod : existingProductRecords) {
+            ExistingproductIds.add(prod.Product__c);
+            if (productData.containsKey(prod.Product__c) && productData.get(prod.Product__c) == false) {
+                productsToDelete.add(prod);
+            }
+        }
+
+        System.debug('ExistingproductIds ' + ExistingproductIds);
+        System.debug('productsToDelete ' + productsToDelete);
+
+
+        try {
+            if(productsToDelete.size()>0){
+                Database.DeleteResult[] deleteResults = Database.delete(productsToDelete, false);
+
+                for (Database.DeleteResult result : deleteResults) {
+                    if (!result.isSuccess()) {
+                        for (Database.Error error : result.getErrors()) {
+                            System.debug('Error deleting record: ' + error.getMessage());
+                        }
+                    }
+                }
+
+                // delete productsToDelete;
+
+            }
+            
+        } catch (DmlException ex) {
+            System.debug(ex);
+        }
+
+
+
+        List<order_form_product__c> productRecordList = new List<order_form_product__c>();
+
+        for(ProductWrapperOption prod : products){
+            order_form_product__c newProductRecord = new order_form_product__c();
+            System.debug('sku ' + prod.sku);
+            System.debug('selected ' + prod.selected);
+            System.debug('ExistingproductIds ' + ExistingproductIds.contains(prod.sku));
+
+
+            if (prod.sku != '' && prod.selected && !ExistingproductIds.contains(prod.sku)) {
+                System.debug('inside..');
+                newProductRecord.Product__c = prod.sku;
+                newProductRecord.Order_Form__c = recordId;
+                productRecordList.add(newProductRecord);
+            }
+            
+        }
+
+        system.debug('productsOption ' + products);
+        system.debug('productRecordList ' + productRecordList);
+
+
+        try {
+            if(productRecordList.size()>0){
+                System.debug('productRecordListif..' + productRecordList);
+                insert productRecordList;
+        List<order_form_product__c> existingProductRecords1 = [Select Product__c from order_form_product__c where Order_Form__c =: orderFormId];
+        System.debug('array..' + existingProductRecords1);
+
+
+
+            }
+        } catch (DmlException ex) {
+            System.debug(ex);
+        }
+    }
+
+    @AuraEnabled
     public static void updateProductInfo(String productDetails, String orderFormId) {
 
         Id recordId = Id.valueOf(orderFormId);
@@ -147,7 +271,7 @@ public with sharing class OrderForm {
         Set<ID> ExistingproductIds = new Set<ID>();
         Map<Id, Integer> productData = new Map<Id, Integer>();
 
-        List<order_form_product__c> existingProductRecords = [Select Product__c, Quantity__c from order_form_product__c where Order_Form__c =: orderFormId];
+        List<order_form_product__c> existingProductRecords = [Select Product__c, Quantity__c from order_form_product__c where Order_Form__c =: orderFormId AND isMasterProduct__c = true];
 
         List<ProductWrapper> products = (List<ProductWrapper>) JSON.deserialize(productDetails, List<ProductWrapper>.class);
 
@@ -181,6 +305,7 @@ public with sharing class OrderForm {
                 newProductRecord.Actual_Price__c = prod.actualPrice;
                 newProductRecord.Discount_Price__c = prod.discountPrice;
                 newProductRecord.Order_Form__c = recordId;
+                newProductRecord.isMasterProduct__c = true;
                 productRecordList.add(newProductRecord);
             }
         }
@@ -203,5 +328,12 @@ public with sharing class OrderForm {
 		public Integer subtotal;
 		public Integer actualPrice;
 		public Integer discountPrice;
+    }
+
+    public class ProductWrapperOption {
+		public String sku;
+		public String id;
+		public String name;
+        public Boolean selected;
     }
 }

@@ -8,14 +8,14 @@
             <ul>
                 <template for:each={prescriptionFiles} for:item="prescriptionFile">
 
-                    <li key={fileName} class="slds-grid slds-m-top_medium slds-col slds-size_1-of-2">
+                    <li key={fileName} class="slds-grid slds-m-top_medium slds-col gap-wrapper slds-medium-size_1-of-2">
                         <lightning-icon icon-name="doctype:image" class="slds-size_1-of-12"
                             alternative-text="Image file" title="Image"></lightning-icon>
                         <p class="slds-size_1-of-2 truncate">{prescriptionFile.Title}</p>
                         <lightning-button-icon icon-name="utility:delete" data-name={prescriptionFile.Title}
                             onclick={deleteFile} data-key={prescriptionFile.ContentDocumentId} data-type="Prescription"
-                            class="delete-btn slds-m-left_xx-small slds-size_1-of-16"></lightning-button-icon>
-                        <lightning-button label="Preview" variant="brand" data-id={prescriptionFile.ContentDocumentId} class="slds-m-left_xx-small slds-size_3-of-16"
+                            class="delete-btn slds-size_1-of-16"></lightning-button-icon>
+                        <lightning-button label="Preview" variant="brand" data-id={prescriptionFile.ContentDocumentId} class=" slds-size_3-of-16"
                             onclick={previewHandler}></lightning-button>
                     </li>
                 </template>
@@ -34,7 +34,7 @@
             <ul>
                 <template for:each={discountFiles} for:item="discountFile">
 
-                    <li key={discountFile.Title} class="slds-grid slds-m-top_medium slds-col slds-size_1-of-2">
+                    <li key={discountFile.Title} class="slds-grid slds-m-top_medium slds-col gap-wrapper slds-medium-size_1-of-2">
                         <lightning-icon icon-name="doctype:image" class="slds-size_1-of-12"
                             alternative-text="Image file" title="Image"></lightning-icon>
                         <p class="slds-size_1-of-2 truncate">{discountFile.Title}</p>
@@ -61,7 +61,7 @@
             <ul>
                 <template for:each={taxExemptFiles} for:item="taxExemptFile">
 
-                    <li key={taxExemptFile.Title} class="slds-grid slds-m-top_medium slds-col slds-size_1-of-2">
+                    <li key={taxExemptFile.Title} class="slds-grid slds-m-top_medium slds-col slds-medium-size_1-of-2">
                         <lightning-icon icon-name="doctype:image" class="slds-size_1-of-12"
                             alternative-text="Image file" title="Image"></lightning-icon>
                         <p class="slds-size_1-of-2 truncate">{taxExemptFile.Title}</p>
