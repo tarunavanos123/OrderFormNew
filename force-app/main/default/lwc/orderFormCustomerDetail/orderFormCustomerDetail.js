@@ -75,12 +75,12 @@ export default class CustomerForm extends LightningElement {
    @wire(getRecord, { recordId: '$currentrecord', fields: FIELDS })
    wiredAccount ({ error, data }) {
     if (data) {
-        this.customer.Salutation = data.fields.Salutation__c.value;
-        this.customer.FirstName = data.fields.First_Name__c.value;
-        this.customer.LastName = data.fields.Last_Name__c.value;
-        this.customer.WithoutRx = data.fields.Without_Rx__c.value;
-        this.customer.PO = data.fields.PO__c.value;
-        this.customer.CustomerTradeClass = data.fields.Customer_Trade_Class__c.value;
+        this.customer.Salutation = data.fields.Salutation__c ? data.fields.Salutation__c.value : '';
+        this.customer.FirstName = data.fields.First_Name__c ? data.fields.First_Name__c.value : '';
+        this.customer.LastName = data.fields.Last_Name__c ? data.fields.Last_Name__c.value : '';
+        this.customer.WithoutRx = data.fields.Without_Rx__c ? data.fields.Without_Rx__c.value : '';
+        this.customer.PO = data.fields.PO__c ? data.fields.PO__c.value : '';
+        this.customer.CustomerTradeClass = data.fields.Customer_Trade_Class__c ? data.fields.Customer_Trade_Class__c.value : '';
         this.customer.CompanyName = data.fields.Company_Name__c.value;
         this.customer.Fax = data.fields.Fax__c.value;
         this.customer.BillingAddress.billingState = data.fields.GB_State_Province__c.value;
@@ -93,6 +93,8 @@ export default class CustomerForm extends LightningElement {
         this.error = undefined;
     } else if (error) {
         this.error = error;
+        console.log('error>>'+error);
+        console.log('jsonError>>'+JSON.stringify(error));
         this.customer = null;
     }
     }
