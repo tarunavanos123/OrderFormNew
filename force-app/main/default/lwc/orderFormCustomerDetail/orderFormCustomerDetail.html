@@ -93,9 +93,11 @@
 
                 <template if:false={isReadOnly}>
                     <div><span class="asterisk">*</span><strong>Email</strong>
-                        <lightning-input variant="label-hidden" type="email" data-id="Email" data-group="formInput"
+                        <lightning-input variant="label-hidden" type="text" data-id="Email" data-group="formInput"
                             class="input-width" value={customer.Email} onchange={handleInputChange} required
-                            readonly={isReadOnly}>
+                             message-when-pattern-mismatch="Please enter a valid email address."
+                             pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+                             readonly={isReadOnly}>
                         </lightning-input>
                     </div>
                 </template>
