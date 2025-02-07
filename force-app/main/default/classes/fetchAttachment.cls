@@ -5,7 +5,8 @@ public with sharing class fetchAttachment {
         List<ContentDocumentLink> records = [
             SELECT ContentDocumentId, 
                    ContentDocument.Title, 
-                   ContentDocument.LatestPublishedVersion.Attachment_Type__c 
+                   ContentDocument.LatestPublishedVersion.Attachment_Type__c ,
+                   ContentDocument.LatestPublishedVersion.Id 
             FROM ContentDocumentLink 
             WHERE LinkedEntityId = :accountId AND ContentDocument.LatestPublishedVersion.Attachment_Type__c = :attachmenttype
               
@@ -16,7 +17,8 @@ public with sharing class fetchAttachment {
             flattenedData.add(new Map<String, String>{
                 'ContentDocumentId' => record.ContentDocumentId,
                 'Title' => record.ContentDocument.Title,
-                'AttachmentType' => record.ContentDocument.LatestPublishedVersion.Attachment_Type__c
+                'AttachmentType' => record.ContentDocument.LatestPublishedVersion.Attachment_Type__c,
+                'versionId' => record.ContentDocument.LatestPublishedVersion.Id
             });
         }
         return flattenedData;

@@ -6,10 +6,11 @@ import fetchAttachmentFiles from '@salesforce/apex/fetchAttachment.fetchAttachme
 import { refreshApex } from '@salesforce/apex';
 import {NavigationMixin} from 'lightning/navigation';
 
+
 export default class UploadFiles extends NavigationMixin(LightningElement) {
-    @api prescriptionFiles = [];
-    @api discountFiles = [];
-    @api taxExemptFiles = [];
+    // @api prescriptionFiles = [];
+    // @api discountFiles = [];
+    // @api taxExemptFiles = [];
     @api recordId;
     @track wiredPrescriptionResult;
     @track wiredDiscountResult;
@@ -19,12 +20,32 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
     @track prescriptionFiles
     @track discountFiles
     @track taxExemptFiles
+    @track contentVersionId;
 
-    constructor () {
+        @track isLoading = false;       // Loading indicator while fetching records
+        constructor () {
         super()
         let jsonData = sessionStorage.getItem('orderFormData');
         this.orderFormId = JSON.parse(jsonData).orderFormId;
     }
+
+    connectedCallback() {
+       
+        const staticStepStatus = {
+            step1: true,
+            step2: true,
+            step3: true,
+            step4: false,
+            step5: false
+        };
+        const stepUpdateEvent = new CustomEvent('stepupdate', {
+            detail: { staticStepStatus }
+        });
+
+        this.dispatchEvent(stepUpdateEvent);
+
+    }
+
 
     @track data = {
         prescriptionFiles: '',
@@ -59,8 +80,10 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
 
     async handleUploadFinished(event) {
         let jsonData = sessionStorage.getItem('orderFormData');
+        console.log('jsonData>>>'+JSON.stringify(jsonData));
         jsonData = jsonData ? JSON.parse(jsonData) : {};
-        this.data = jsonData.documentation;
+        this.data = jsonData.documentation ;
+        console.log('this.data>>>'+JSON.stringify(this.data));
         const uploadedFiles = event.detail.files;
         let contentVersion = new Map();
 
@@ -75,6 +98,7 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
                 this.prescriptionFiles = event.detail.files
                 await refreshApex(this.wiredPrescriptionResult);
                 if (jsonData) {
+                    console.log("HHSHHSH"+JSON.stringify(this.data));
                     this.data.prescriptionFiles = this.prescriptionFiles;
                     jsonData.documentation = this.data;
                 }
@@ -105,10 +129,12 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
     }
 
     async deleteFile(event) {
+        this.isLoading = true;
         const updateToDelete = event.target.dataset.key;
 
         try {
             await deleteRecord(updateToDelete);
+            this.isLoading = false;
             this.dispatchEvent(
                 new ShowToastEvent({
                     title: 'Success',
@@ -123,6 +149,7 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
 
 
         } catch (error) {
+            this.isLoading = false;
             this.dispatchEvent(
                 new ShowToastEvent({
                     title: 'Error deleting record',
@@ -134,14 +161,18 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
     }
 
     previewHandler(event){
+    let baseUrl = this.getBaseUrl();
+    var previewUrl =     baseUrl+'/partner/sfc/servlet.shepherd/version/renditionDownload?rendition=THUMB720BY480&versionId='+event.target.dataset.version;        
         this[NavigationMixin.Navigate]({
-            type:'standard__namedPage',
-            attributes:{
-                pageName:'filePreview'
-            },
-            state:{
-                selectedRecordId: event.target.dataset.id
+            type: 'standard__webPage',
+            attributes: {
+                url: previewUrl
             }
-        })
+        }, false );
     }
+    getBaseUrl(){
+        let baseUrl = 'https://'+location.host+'/';
+        return baseUrl;
+    }
+
 }

@@ -77,7 +77,6 @@ hr {
 }
 
 .main-container {
-    
     box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.1); 
     border-top: 2px solid #ddd; 
     border-left: 2px solid #ddd; 
@@ -95,4 +94,90 @@ hr {
 
 .slds-card__body {
     margin: 0;
+}
+
+.display-flex {
+    display: flex;
+    gap: 2rem;
+}
+
+.display-flex-noGap {
+    display: flex;
+}
+
+.input-height {
+    height: 30px;
+}
+
+.text-bold {
+    font-weight: bold;
+}
+
+.align-total-content {
+    display: flex;
+    justify-content: end;
+}
+
+.align-quantity {
+    position: relative;
+    top: -25px;
+}
+
+
+.dropdown {
+    position: relative;
+    font-family: Arial, sans-serif;
+    top: -2px;
+}
+
+
+.dropdown-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    background: #fff;
+}
+
+.dropdown-item {
+    padding: 10px 10px;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #f0f0f0;
+}
+
+@media screen and (max-width: 768px) {
+    .display-flex {
+        flex-direction: column;
+    }
+
+    .display-flex-noGap {
+        gap: 2rem;
+        flex-direction: column;
+    }
+
+
+    .quantity {
+        width: auto;
+        height: 25px;
+    }
+
+    .input-fields {
+        width: 100%;
+    }
+
+    .right-content {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .align-total-content {
+        display: flex;
+        justify-content: space-between;
+    }
+
 }

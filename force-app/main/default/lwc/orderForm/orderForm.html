@@ -1,26 +1,50 @@
 <template>
+<template if:false={confirmationMessage}>
     <lightning-card class="slds-m-around_small slds-p-horizontal_large">
         <div class="slds-p-horizontal_large">
-            <lightning-progress-indicator current-step={step} type="path" variant="base">
+            <lightning-progress-indicator current-step={step} type="path" variant="base" class="custom-indicatior">
                 <template for:each={status} for:item="stepItem">
-                    <lightning-progress-step onclick={handleProgress} key={stepItem.value} label={stepItem.label}
-                        value={stepItem.value}>
+                    <lightning-progress-step onclick={handleProgress} disbaled=false key={stepItem.value}
+                        label={stepItem.label} value={stepItem.value}>
                     </lightning-progress-step>
                 </template>
             </lightning-progress-indicator>
         </div>
 
-        <template if:true={isStep1}> <c-order-form-customer-type
-                onrecordevent={handleRecordID}></c-order-form-customer-type> </template>
-        <template if:true={isStep2}> <c-order-form-customer-detail onformvalidation={handleFormValidation}
-                currentrecord={currentRecordID}></c-order-form-customer-detail> </template>
-        <template if:true={isStep3}> <c-order-form-price-details
-                onproductvalidation={handleProductValidation}></c-order-form-price-details> </template>
-        <template if:true={isStep4}> <c-order-form-upload-document></c-order-form-upload-document> </template>
-        <template if:true={isStep5}> <c-order-form-summary></c-order-form-summary> </template>
+        <template if:true={isStep1}>
+            <c-order-form-customer-type onrecordevent={handleRecordID}
+                onstepupdate={handleStatuses}></c-order-form-customer-type>
+        </template>
+        <template if:true={isStep2}>
+            <c-order-form-customer-detail onformvalidation={handleFormValidation} currentrecord={currentRecordID}
+                onstepupdate={handleStatuses}></c-order-form-customer-detail>
+        </template>
+        <template if:true={isStep3}>
+            <c-order-form-price-details onproductvalidation={handleProductValidation}
+                onstepupdate={handleStatuses}></c-order-form-price-details>
+        </template>
+        <template if:true={isStep4}>
+            <c-order-form-upload-document onstepupdate={handleStatuses}></c-order-form-upload-document>
+        </template>
+        <template if:true={isStep5}>
+            <c-order-form-summary onstepupdate={handleStatuses}></c-order-form-summary>
+        </template>
 
         <c-order-form-footer onprevious={handlePrevious} first={isStep1} step={isStep5} onnext={handleNext}
-            isbuttondisabled={isButtonDisable} istoshow={isToShow}
+            isbuttondisabled={isButtonDisable} istoshow={isToShow} onconfirmation={handleConfirmation}
             isnextbuttondisabled={isNextButtonDisabled}></c-order-form-footer>
     </lightning-card>
+</template>
+
+    <template if:true={confirmationMessage}>
+        <lightning-card class="slds-m-around_small">
+            <div class="thank-you-container">
+                <lightning-card title="Thank You" icon-name="action:approval">
+                <p class="message">Thank you for Placing the Order! 
+                    <br> Your Order ID is : {orderid}</p>
+                </lightning-card>
+            </div>
+        </lightning-card>
+    </template>
+
 </template>
