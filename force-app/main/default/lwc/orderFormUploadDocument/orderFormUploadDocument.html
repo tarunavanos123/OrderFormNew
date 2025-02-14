@@ -1,21 +1,21 @@
 <template>
     <div class="upload-section">
         <h2>Prescription</h2>
-        <lightning-file-upload name="prescription" multiple accept=".pdf,.jpg,.jpeg,.png" record-id={orderFormId}
+        <lightning-file-upload name="prescription" multiple accept=".pdf,.jpg,.jpeg,.png,.docx,.docs,.xml,.xlsx,.xls" record-id={orderFormId}
             data-attachmenttype="Prescription" onuploadfinished={handleUploadFinished}>
         </lightning-file-upload>
         <template if:true={prescriptionFiles}>
             <ul>
                 <template for:each={prescriptionFiles} for:item="prescriptionFile">
 
-                    <li key={fileName} class="slds-grid slds-m-top_medium slds-col slds-size_1-of-2">
+                    <li key={fileName} class="slds-grid slds-m-top_medium slds-col gap-wrapper slds-medium-size_1-of-2">
                         <lightning-icon icon-name="doctype:image" class="slds-size_1-of-12"
                             alternative-text="Image file" title="Image"></lightning-icon>
                         <p class="slds-size_1-of-2 truncate">{prescriptionFile.Title}</p>
                         <lightning-button-icon icon-name="utility:delete" data-name={prescriptionFile.Title}
                             onclick={deleteFile} data-key={prescriptionFile.ContentDocumentId} data-type="Prescription"
-                            class="delete-btn slds-m-left_xx-small slds-size_1-of-16"></lightning-button-icon>
-                        <lightning-button label="Preview" variant="brand" data-id={prescriptionFile.ContentDocumentId} class="slds-m-left_xx-small slds-size_3-of-16"
+                            class="delete-btn slds-size_1-of-16"></lightning-button-icon>
+                        <lightning-button label="Preview" variant="brand" data-id={prescriptionFile.ContentDocumentId} data-version={prescriptionFile.versionId} class=" slds-size_3-of-16"
                             onclick={previewHandler}></lightning-button>
                     </li>
                 </template>
@@ -26,7 +26,7 @@
 
     <div class="upload-section">
         <h2>Waiver</h2>
-        <lightning-file-upload name="discountDocument" multiple accept=".pdf,.jpg,.jpeg,.png" record-id={orderFormId}
+        <lightning-file-upload name="discountDocument" multiple accept=".pdf,.jpg,.jpeg,.png,.docx,.docs,.xml,.xlsx,.xls" record-id={orderFormId}
             data-attachmenttype="Discount Document" onuploadfinished={handleUploadFinished}>
         </lightning-file-upload>
 
@@ -34,14 +34,14 @@
             <ul>
                 <template for:each={discountFiles} for:item="discountFile">
 
-                    <li key={discountFile.Title} class="slds-grid slds-m-top_medium slds-col slds-size_1-of-2">
+                    <li key={discountFile.Title} class="slds-grid slds-m-top_medium slds-col gap-wrapper slds-medium-size_1-of-2">
                         <lightning-icon icon-name="doctype:image" class="slds-size_1-of-12"
                             alternative-text="Image file" title="Image"></lightning-icon>
                         <p class="slds-size_1-of-2 truncate">{discountFile.Title}</p>
                         <lightning-button-icon icon-name="utility:delete" data-name={discountFile.Title}
                             onclick={deleteFile} data-key={discountFile.ContentDocumentId} data-type="Discount Document"
                             class="delete-btn slds-m-left_xx-small slds-size_1-of-16"></lightning-button-icon>
-                            <lightning-button label="Preview" variant="brand" data-id={discountFile.ContentDocumentId} class="slds-m-left_xx-small slds-size_3-of-16"
+                            <lightning-button label="Preview" variant="brand" data-id={discountFile.ContentDocumentId} data-version={discountFile.versionId} class="slds-m-left_xx-small slds-size_3-of-16"
                             onclick={previewHandler}></lightning-button>
                     </li>
                 </template>
@@ -52,7 +52,7 @@
 
     <div class="upload-section">
         <h2>Tax Exemption Certificate</h2>
-        <lightning-file-upload name="taxexemptioncertificate" multiple accept=".pdf,.jpg,.jpeg,.png"
+        <lightning-file-upload name="taxexemptioncertificate" multiple accept=".pdf,.jpg,.jpeg,.png,.docx,.docs,.xml,.xlsx,.xls"
             record-id={orderFormId} data-attachmenttype="Tax Exemption Certificate"
             onuploadfinished={handleUploadFinished}>
         </lightning-file-upload>
@@ -61,7 +61,7 @@
             <ul>
                 <template for:each={taxExemptFiles} for:item="taxExemptFile">
 
-                    <li key={taxExemptFile.Title} class="slds-grid slds-m-top_medium slds-col slds-size_1-of-2">
+                    <li key={taxExemptFile.Title} class="slds-grid slds-m-top_medium slds-col slds-medium-size_1-of-2">
                         <lightning-icon icon-name="doctype:image" class="slds-size_1-of-12"
                             alternative-text="Image file" title="Image"></lightning-icon>
                         <p class="slds-size_1-of-2 truncate">{taxExemptFile.Title}</p>
@@ -69,11 +69,15 @@
                             onclick={deleteFile} data-key={taxExemptFile.ContentDocumentId}
                             data-type="Tax Exemption Certificate"
                             class="delete-btn slds-m-left_xx-small slds-size_1-of-16"></lightning-button-icon>
-                            <lightning-button label="Preview" variant="brand" data-id={taxExemptFile.ContentDocumentId} class="slds-m-left_xx-small slds-size_3-of-16"
+                            <lightning-button label="Preview" variant="brand" data-id={taxExemptFile.ContentDocumentId} data-version={taxExemptFile.versionId} class="slds-m-left_xx-small slds-size_3-of-16"
                             onclick={previewHandler}></lightning-button>
                     </li>
                 </template>
             </ul>
         </template>
     </div>
+
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading..." size="small"></lightning-spinner>
+    </template> 
 </template>

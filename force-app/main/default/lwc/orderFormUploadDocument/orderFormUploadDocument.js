@@ -4,12 +4,10 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { deleteRecord } from 'lightning/uiRecordApi';
 import fetchAttachmentFiles from '@salesforce/apex/fetchAttachment.fetchAttachmentFiles';
 import { refreshApex } from '@salesforce/apex';
-import {NavigationMixin} from 'lightning/navigation';
+import { NavigationMixin } from 'lightning/navigation';
+
 
 export default class UploadFiles extends NavigationMixin(LightningElement) {
-    @api prescriptionFiles = [];
-    @api discountFiles = [];
-    @api taxExemptFiles = [];
     @api recordId;
     @track wiredPrescriptionResult;
     @track wiredDiscountResult;
@@ -19,11 +17,29 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
     @track prescriptionFiles
     @track discountFiles
     @track taxExemptFiles
+    @track contentVersionId;
 
+    @track isLoading = false;       // Loading indicator while fetching records
     constructor () {
         super()
         let jsonData = sessionStorage.getItem('orderFormData');
         this.orderFormId = JSON.parse(jsonData).orderFormId;
+    }
+
+    connectedCallback() {
+
+        const staticStepStatus = {
+            step1: true,
+            step2: true,
+            step3: true,
+            step4: false,
+            step5: false
+        };
+        const stepUpdateEvent = new CustomEvent('stepupdate',{
+            detail: { staticStepStatus }
+        });
+
+        this.dispatchEvent(stepUpdateEvent);
     }
 
     @track data = {
@@ -37,7 +53,6 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
         this.wiredPrescriptionResult = result;
         if (result.data) {
             this.prescriptionFiles = result.data;
-            
         }
     }
 
@@ -59,8 +74,12 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
 
     async handleUploadFinished(event) {
         let jsonData = sessionStorage.getItem('orderFormData');
-        jsonData = jsonData ? JSON.parse(jsonData) : {};
-        this.data = jsonData.documentation;
+
+        if (jsonData) {
+            jsonData = jsonData ? JSON.parse(jsonData) : {};
+            this.data = jsonData.documentation;
+        }
+
         const uploadedFiles = event.detail.files;
         let contentVersion = new Map();
 
@@ -68,7 +87,7 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
             contentVersion.set(el.contentVersionId,event.target.dataset.attachmenttype);
         });
 
-        TypeConversion({ filedata: Object.fromEntries(contentVersion)});
+        TypeConversion({ filedata: Object.fromEntries(contentVersion) });
 
         if (uploadedFiles.length > 0) {
             if (event.target.dataset.attachmenttype == 'Prescription') {
@@ -105,10 +124,12 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
     }
 
     async deleteFile(event) {
+        this.isLoading = true;
         const updateToDelete = event.target.dataset.key;
 
         try {
             await deleteRecord(updateToDelete);
+            this.isLoading = false;
             this.dispatchEvent(
                 new ShowToastEvent({
                     title: 'Success',
@@ -123,6 +144,7 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
 
 
         } catch (error) {
+            this.isLoading = false;
             this.dispatchEvent(
                 new ShowToastEvent({
                     title: 'Error deleting record',
@@ -133,15 +155,19 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
         }
     }
 
-    previewHandler(event){
+    previewHandler(event) {
+        let baseUrl = this.getBaseUrl();
+        var previewUrl = baseUrl + '/partner/sfc/servlet.shepherd/version/renditionDownload?rendition=THUMB720BY480&versionId=' + event.target.dataset.version;
         this[NavigationMixin.Navigate]({
-            type:'standard__namedPage',
-            attributes:{
-                pageName:'filePreview'
-            },
-            state:{
-                selectedRecordId: event.target.dataset.id
+            type: 'standard__webPage',
+            attributes: {
+                url: previewUrl
             }
-        })
+        },false);
     }
+    getBaseUrl() {
+        let baseUrl = 'https://' + location.host + '/';
+        return baseUrl;
+    }
+
 }

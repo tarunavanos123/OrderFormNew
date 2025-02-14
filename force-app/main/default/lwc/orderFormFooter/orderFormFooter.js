@@ -1,6 +1,6 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement,api,wire } from 'lwc';
 import submitOrderForm from '@salesforce/apex/OrderForm.submitOrderForm';
-
+import sendMail from '@salesforce/apex/EmailManager.sendMail';
 
 export default class Footer extends LightningElement {
     @api isbuttondisabled;
@@ -12,7 +12,7 @@ export default class Footer extends LightningElement {
     customerType;
 
     handlePrevious() {
-        const event = new CustomEvent('previous', {detail:{'message':'Previous'}});
+        const event = new CustomEvent('previous',{ detail: { 'message': 'Previous' } });
         this.dispatchEvent(event);
     }
 
@@ -23,18 +23,23 @@ export default class Footer extends LightningElement {
         let orderFormId = jsonData.orderFormId ? jsonData.orderFormId : '';
 
         submitOrderForm({ orderFormId: `${orderFormId}` })
-        .then(result => {
-            this.records = result;
-            sessionStorage.removeItem('orderFormData');
-            window.location.reload();
-        })
-        .catch(error => {
-            console.error(error);
-        });
+            .then(result => {
+                this.records = result;
+                if (jsonData.CustomerData.Email) {
+                    sendMail({ address: jsonData.CustomerData.Email.toString(),subject: 'Order Confirmation and Payment Link',recordID: orderFormId,token: result });
+                }
+
+                sessionStorage.removeItem('orderFormData');
+                const event = new CustomEvent('confirmation',{ detail: { 'orderid': orderFormId } });
+                this.dispatchEvent(event);
+            })
+            .catch(error => {
+                console.error(error);
+            });
     }
 
     handleNext() {
-        const event = new CustomEvent('next', {detail:{'message':'Next'}});
+        const event = new CustomEvent('next',{ detail: { 'message': 'Next' } });
         this.dispatchEvent(event);
     }
 }

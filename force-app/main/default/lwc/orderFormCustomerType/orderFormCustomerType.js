@@ -57,6 +57,7 @@ export default class CustomerPage extends LightningElement {
     }
 
     regHandleClick() {
+        sessionStorage.removeItem('orderFormData');
         this.isRegisterCustomer = true;
         let jsonData = sessionStorage.getItem('orderFormData');
         jsonData = jsonData ? JSON.parse(jsonData) : {};
@@ -98,15 +99,15 @@ export default class CustomerPage extends LightningElement {
 
     // Handle record selection
     handleRecordSelect(event) {
-        const record = event.target.dataset.id;
-        const recordName = event.target.dataset.record
+        const record = event.currentTarget.dataset.id;
+        const recordName = event.currentTarget.dataset.record
         this.searchTerm = recordName;
         let jsonData = sessionStorage.getItem('orderFormData');
         jsonData = jsonData ? JSON.parse(jsonData) : {};
-        jsonData.customerId = event.target.dataset.id;
-        jsonData.customerName = event.target.dataset.name;
+        jsonData.customerId = record
+        jsonData.customerName = recordName
         sessionStorage.setItem('orderFormData',JSON.stringify(jsonData));
-        this.accountId = event.target.dataset.id;
+        this.accountId = record
         this.enableNextButton = true;
         const recordIdEvent = new CustomEvent('recordevent',{ detail: { 'accountId': this.accountId,'showNextButton': this.enableNextButton,'fromCustomerTypeForm': true } });
         this.dispatchEvent(recordIdEvent);
@@ -123,6 +124,7 @@ export default class CustomerPage extends LightningElement {
 
         if (storedData) {
             var parsedJson = JSON.parse(storedData);
+            this.customerType = parsedJson.customerType;
             if (parsedJson.customerType == 'New Customer') {
                 this.isRegisterCustomer = false;
                 this.newCustomerVariant = 'brand';
@@ -131,19 +133,33 @@ export default class CustomerPage extends LightningElement {
                 this.enableNextButton = true;
                 const recordIdEvent = new CustomEvent('recordevent',{ detail: { 'accountId': this.accountId,'showNextButton': this.enableNextButton,'fromCustomerTypeForm': true } });
                 this.dispatchEvent(recordIdEvent);
-                
+
             }
             if (parsedJson?.customerName) {
                 this.accountId = parsedJson.customerId;
-                this.enableNextButton = true; // sumit
-                const recordIdEvent = new CustomEvent('recordevent',{ detail: { 'accountId': this.accountId,'showNextButton': this.enableNextButton,'fromCustomerTypeForm': false } }); // sumit
+                this.enableNextButton = true;
+                const recordIdEvent = new CustomEvent('recordevent',{ detail: { 'accountId': this.accountId,'showNextButton': this.enableNextButton,'fromCustomerTypeForm': false } });
                 if (parsedJson.customerName) {
-                    this.searchTerm = parsedJson.customerName; // sumit
+                    this.searchTerm = parsedJson.customerName;
                 }
-                this.dispatchEvent(recordIdEvent); // sumit
+                this.dispatchEvent(recordIdEvent);
             }
         }
         document.addEventListener('click',this.handleClickOutside.bind(this));
+
+        const staticStepStatus = {
+            step1: false,
+            step2: false,
+            step3: false,
+            step4: false,
+            step5: false
+        };
+        const stepUpdateEvent = new CustomEvent('stepupdate',{
+            detail: { staticStepStatus }
+        });
+
+        this.dispatchEvent(stepUpdateEvent);
+
     }
 
     // Remove event listener when component is removed from DOM
@@ -152,7 +168,7 @@ export default class CustomerPage extends LightningElement {
         jsonData = jsonData ? JSON.parse(jsonData) : {};
         jsonData.customerId = this.accountId;
         jsonData.customerType = this.customerType;
-        sessionStorage.setItem('orderFormData', JSON.stringify(jsonData));
+        sessionStorage.setItem('orderFormData',JSON.stringify(jsonData));
         document.removeEventListener('click',this.handleClickOutside.bind(this));
     }
 }

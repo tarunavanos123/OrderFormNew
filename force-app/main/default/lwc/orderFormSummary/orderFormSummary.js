@@ -11,23 +11,22 @@ export default class OrderFormSummary extends LightningElement {
         Phone: '',
         Fax: '',
         ShippingAddress: {
-            Street: '',
-            City: '',
-            State: '',
-            ZipCode: ''
+            shippingStreet: '',
+            shippingCity: '',
+            shippingState: '',
+            shippingZipCode: ''
         },
         BillingAddress: {
-            Street: '',
-            City: '',
-            State: '',
-            ZipCode: ''
+            billingStreet: '',
+            billingCity: '',
+            billingState: '',
+            billingZipCode: ''
         }
     };
 
+    @track productOptionsUpdatedList = [];
     @track productData = [];
-
     @track document;
-
     @track productinfo;
 
     @track data = {
@@ -52,14 +51,14 @@ export default class OrderFormSummary extends LightningElement {
             this.customer.Email = customData.Email;
             this.customer.Fax = customData.Fax;
             this.customer.Phone = customData.Phone;
-            this.customer.ShippingAddress.Street = customData.ShippingAddress.Street;
-            this.customer.ShippingAddress.City = customData.ShippingAddress.City;
-            this.customer.ShippingAddress.State = customData.ShippingAddress.State;
-            this.customer.ShippingAddress.ZipCode = customData.ShippingAddress.ZipCode;
-            this.customer.BillingAddress.Street = customData.BillingAddress.Street;
-            this.customer.BillingAddress.City = customData.BillingAddress.City;
-            this.customer.BillingAddress.State = customData.BillingAddress.State;
-            this.customer.BillingAddress.ZipCode = customData.BillingAddress.ZipCode;
+            this.customer.ShippingAddress.shippingStreet = customData.ShippingAddress.shippingStreet;
+            this.customer.ShippingAddress.shippingCity = customData.ShippingAddress.shippingCity;
+            this.customer.ShippingAddress.shippingState = customData.ShippingAddress.shippingState;
+            this.customer.ShippingAddress.shippingZipCode = customData.ShippingAddress.shippingZipCode;
+            this.customer.BillingAddress.billingStreet = customData.BillingAddress.billingStreet;
+            this.customer.BillingAddress.billingCity = customData.BillingAddress.billingCity;
+            this.customer.BillingAddress.billingState = customData.BillingAddress.billingState;
+            this.customer.BillingAddress.billingZipCode = customData.BillingAddress.billingZipCode;
 
             if (parsedJson?.totalOrderSummary) {
                 this.data = JSON.parse(storedData).totalOrderSummary;
@@ -72,12 +71,34 @@ export default class OrderFormSummary extends LightningElement {
             if (parsedJson?.PriceData) {
                 this.productinfo = JSON.parse(storedData).PriceData;
             }
-            
+
+            if (parsedJson?.productOptionsUpdatedList) {
+                this.productOptionsUpdatedList = JSON.parse(storedData).productOptionsUpdatedList;
+            }
+
             if (parsedJson?.documentation) {
                 this.document = JSON.parse(storedData).documentation;
             }
         }
 
+        const staticStepStatus = {
+            step1: true,
+            step2: true,
+            step3: true,
+            step4: true,
+            step5: false
+        };
+
+        const stepUpdateEvent = new CustomEvent('stepupdate',{
+            detail: { staticStepStatus }
+        });
+
+        this.dispatchEvent(stepUpdateEvent);
+
+    }
+
+    get isProductOptionsUpdatedList() {
+        return this.productOptionsUpdatedList.length === 0;
     }
 
     disconnectedCallback() {
@@ -85,6 +106,6 @@ export default class OrderFormSummary extends LightningElement {
         jsonData = jsonData ? JSON.parse(jsonData) : {};
         jsonData.totalOrderSummary = this.data;
         jsonData.productData = this.productData;
-        sessionStorage.setItem('orderFormData', JSON.stringify(jsonData));
+        sessionStorage.setItem('orderFormData',JSON.stringify(jsonData));
     }
 }

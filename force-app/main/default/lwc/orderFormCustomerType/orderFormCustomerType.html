@@ -1,14 +1,14 @@
 <template>
 
-    <div class="slds-m-around_xx-large">
+    <div class="slds-m-around_large">
         <div class="slds-m-vertical_x-large">
             <div class="name-text slds-m-vertical_x-small">
                 <span class="asterisk">*</span><strong>Customer Type</strong>
             </div>
             <lightning-button-group>
-                <lightning-button label="New Customer" onclick={newHandleClick}
+                <lightning-button class="custom-button" label="New Customer" onclick={newHandleClick}
                     variant={newCustomerVariant}></lightning-button>
-                <lightning-button label="Existing Customer" onclick={regHandleClick}
+                <lightning-button class="custom-button" label="Existing Customer" onclick={regHandleClick}
                     variant={registerCustomerVariant}></lightning-button>
             </lightning-button-group>
         </div>
@@ -16,7 +16,7 @@
 
         <template lwc:if={isRegisterCustomer}>
             <div class="slds-col slds-size_3-of-12">
-                <p><strong>Customer Lookup</strong></p>
+                <p><strong class="customer-label">Customer Lookup</strong></p>
                 <lightning-input value={searchTerm} variant="label-hidden" onchange={handleSearchChange}
                     oncommit={handleClear} placeholder="Search for Account..."
                     class="search-input slds-col slds-size_3-of-12 slds-input__icon_right" type="search">
@@ -27,14 +27,28 @@
                 </template>
 
                 <template if:true={isDropdownVisible}>
-                    <div class="dropdown slds-col slds-size_3of-12">
+                    <div class="search-input dropdown slds-col slds-size_3of-12">
                         <template if:true={records.length}>
                             <ul class="dropdown-list slds-input">
                                 <template for:each={records} for:item="record">
-                                    <li key={record.Id} data-id={record.Id} data-name={record.Name}
-                                        data-record={record.Name} onclick={handleRecordSelect} class="dropdown-item">
-                                        {record.Name}
+                                    <li key={record.Id} data-id={record.Id} data-name={record.First_Name__c}
+                                        data-record={record.First_Name__c} onclick={handleRecordSelect} class="dropdown-item">
+                                        <article class="slds-card">
+                                            <div class="slds-card__body slds-card__body_inner">
+                                                <div class="display-flex">
+                                                    <span class="slds-text-body_small"><strong>{record.First_Name__c} {record.Last_Name__c} </strong>
+                                                    </span>
+                                                    <template lwc:if={record.Phone__c}>
+                                                        <span class="slds-text-body_small slds-text-align_right"><strong>{record.Phone__c}</strong></span>
+                                                    </template>
+                                                </div>
+                                                <template lwc:if={record.Shipping_Street__c}>
+                                                    <p class="slds-text-body_small">{record.Shipping_Street__c}</p>
+                                                </template>
+                                            </div>
+                                        </article>
                                     </li>
+
                                 </template>
                             </ul>
                         </template>

@@ -1,0 +1,40 @@
+.label-text {
+    margin-top: 1rem;
+    color: black;
+}
+
+.asterisk {
+    color: red;
+    font-weight: bold;
+}
+
+.label-text strong {
+    font-weight: bold;
+}
+
+.custom-indicatior {
+    --lwc-colorBackgroundPathCurrent: #4bca81;
+    --lwc-colorBackgroundPathCurrentHover: #4bca81;
+    --lwc-colorBackgroundPathIncomplete: #4bca81;
+    --lwc-colorBackgroundPathIncompleteHover: #4bca81;
+    --lwc-colorBackgroundPathComplete: #4bca81;
+    --lwc-colorBackgroundPathCompleteHover: #33985e;
+    --lwc-colorBackgroundPathActiveHover: #c9c9c9;
+    --lwc-progressColorBorderActive: blue;
+    --lwc-colorBackgroundPathActive: white;
+    --lwc-colorTextPathCurrent: black;
+    --lwc-colorBorderPathCurrentHover:#c9c9c9;
+}
+
+.thank-you-container {
+    padding: 10px 20px;
+    justify-content: center;
+    align-items: center;
+    height: 30vh;
+
+  }
+  .message {
+    padding: 10px 20px;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }

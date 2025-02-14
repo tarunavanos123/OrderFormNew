@@ -20,14 +20,18 @@
     top: -16px;
 }
 
+.customer-label {
+    width: 200px;
+    display: block;
+}
+
 .search-input {
-    width: 100%;
+    width: 340px;
     padding: 10px 0;
     font-size: 14px;
     margin-bottom: 5px;
     padding-top: 0;
-
-    
+    --lwc-borderWidthThin: 1.5px;
 }
 
 .dropdown-list {
@@ -41,7 +45,7 @@
 }
 
 .dropdown-item {
-    padding: 0 10px;
+    padding: 1px 10px;
     cursor: pointer;
 }
 
@@ -50,6 +54,22 @@
 }
 
 .search-input.slds-form-element{
-    /* padding-bottom: 0; */
     background-color: white;
+}
+
+.display-flex {
+    display: flex;
+    justify-content: space-between;
+}
+
+.custom-button {
+    --lwc-brandAccessible: #00a1e0;
+    --sds-c-button-brand-color-background: #00a1e0;
+    --slds-c-button-color-background: #00a1e0;
+}
+
+@media all and (max-width: 576px) {
+    .search-input {
+        width: 290px;
+    }
 }
