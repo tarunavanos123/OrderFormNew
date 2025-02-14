@@ -88,8 +88,6 @@ export default class CustomerPage extends LightningElement {
         searchAccounts({ searchTerm: `%${this.searchTerm}%` })
             .then(result => {
                 this.records = result;
-                console.log(this.records);
-
                 this.isLoading = false;
                 this.isDropdownVisible = true;  // Show the dropdown with results
             })
@@ -126,6 +124,7 @@ export default class CustomerPage extends LightningElement {
 
         if (storedData) {
             var parsedJson = JSON.parse(storedData);
+            this.customerType = parsedJson.customerType;
             if (parsedJson.customerType == 'New Customer') {
                 this.isRegisterCustomer = false;
                 this.newCustomerVariant = 'brand';
@@ -155,12 +154,12 @@ export default class CustomerPage extends LightningElement {
             step4: false,
             step5: false
         };
-        const stepUpdateEvent = new CustomEvent('stepupdate', {
+        const stepUpdateEvent = new CustomEvent('stepupdate',{
             detail: { staticStepStatus }
         });
 
         this.dispatchEvent(stepUpdateEvent);
-        
+
     }
 
     // Remove event listener when component is removed from DOM

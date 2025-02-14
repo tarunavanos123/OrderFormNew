@@ -4,30 +4,30 @@ public with sharing class OrderForm {
     public static List<OrderFormWrapper> getOrderFormsByOwner(String ownID) {
        Id ownerId= Id.valueOf(ownID);        // Query Order Form records for the specified owner
         List<Order_Form__c> orderForms = [
-            SELECT 
-                Id, 
-                First_Name__c, 
+            SELECT
+                Id,
+                First_Name__c,
                 Last_Name__c,
-                Email__c, 
+                Email__c,
                 Phone__c,
                 Company_Name__c,
                 Status__c,
-                (SELECT 
-                    Id, 
-                    Product__c, 
-                    Quantity__c, 
-                    Subtotal_Price__c, 
-                    Actual_Price__c, 
-                    Discount_Price__c 
-                 FROM 
+                (SELECT
+                    Id,
+                    Product__c,
+                    Quantity__c,
+                    Subtotal_Price__c,
+                    Actual_Price__c,
+                    Discount_Price__c
+                 FROM
                     Order_Form_Products__r) // Child relationship name for Order_Form_Product__c
-            FROM 
-                Order_Form__c 
-            WHERE 
+            FROM
+                Order_Form__c
+            WHERE
                 OwnerId = :ownerId
         ];
 
-        System.debug('ORDER '+orderForms);
+        System.debug('ORDER'+orderForms);
 
         // Map the queried records to a wrapper class
         List<OrderFormWrapper> orderFormWrappers = new List<OrderFormWrapper>();
@@ -56,7 +56,7 @@ public with sharing class OrderForm {
             orderFormWrappers.add(wrapper);
         }
 
-        System.debug('ORDER -1'+orderFormWrappers);
+        System.debug('ORDER'+orderFormWrappers);
 
 
         return orderFormWrappers;
@@ -89,6 +89,7 @@ public with sharing class OrderForm {
                 Salutation__c,
                 PO__c,
                 Fax__c,
+                SAP_Account__c,
                 (SELECT
                     Id,
                     Product__c,
@@ -96,7 +97,9 @@ public with sharing class OrderForm {
                     Quantity__c,
                     Subtotal_Price__c,
                     Actual_Price__c,
-                    Discount_Price__c
+                    Discount_Price__c,
+                    master_product__c,
+                    isMasterProduct__c
                 FROM
                     Order_Form_Products__r) // Child relationship name for Order_Form_Product__c
             FROM
@@ -132,6 +135,7 @@ public with sharing class OrderForm {
             wrapper.salutation = orderForm.Salutation__c;
             wrapper.PO = orderForm.PO__c;
             wrapper.fax = orderForm.Fax__c;
+            wrapper.SAPAccount = orderForm.SAP_Account__c;
             
             // Add product details
             wrapper.products = new List<OrderProductWrapper>();
@@ -143,13 +147,15 @@ public with sharing class OrderForm {
                 productWrapper.subtotalPrice = product.Subtotal_Price__c;
                 productWrapper.actualPrice = product.Actual_Price__c;
                 productWrapper.discountPrice = product.Discount_Price__c;
+                productWrapper.masterProduct = product.master_product__c;
+                productWrapper.isMasterProduct = product.isMasterProduct__c;
                 wrapper.products.add(productWrapper);
             }
 
             orderFormIDWrappers.add(wrapper);
         }
 
-        System.debug('ORDER -1'+orderFormIDWrappers);
+        System.debug('ORDER'+orderFormIDWrappers);
 
 
         return orderFormIDWrappers;
@@ -191,6 +197,7 @@ public with sharing class OrderForm {
         @AuraEnabled public String salutation { get; set; }
         @AuraEnabled public String PO { get; set; }
         @AuraEnabled public String fax { get; set; }
+        @AuraEnabled public String SAPAccount { get; set; }
         @AuraEnabled public List<OrderProductWrapper> products { get; set; } // List of products
 
     }
@@ -202,6 +209,8 @@ public with sharing class OrderForm {
     @AuraEnabled public Decimal subtotalPrice { get; set; }
     @AuraEnabled public Decimal actualPrice { get; set; }
     @AuraEnabled public Decimal discountPrice { get; set; }
+    @AuraEnabled public String masterProduct { get; set; }
+    @AuraEnabled public Boolean isMasterProduct { get; set; }
 }
 
 
@@ -213,11 +222,14 @@ public with sharing class OrderForm {
     @AuraEnabled
     public static List<SBQQ__ProductOption__c> fetchProductOptions(Id productId) {
         system.debug('productId' +  productId);
-        List<SBQQ__ProductOption__c> listName = [SELECT Id, Name, SBQQ__ConfiguredSKU__c FROM SBQQ__ProductOption__c WHERE SBQQ__ConfiguredSKU__c = :productId];
+        List<SBQQ__ProductOption__c> listName = [SELECT Id, Name, SBQQ__OptionalSKU__c, SBQQ__ConfiguredSKU__r.Name, SBQQ__ConfiguredSKU__c, SBQQ__ProductName__c, SBQQ__Required__c, SBQQ__Selected__c FROM SBQQ__ProductOption__c WHERE SBQQ__ConfiguredSKU__c = :productId];
         system.debug('productId' +  listName);
 
-        return [SELECT Id, Name, SBQQ__OptionalSKU__c, SBQQ__ConfiguredSKU__c, SBQQ__Required__c, SBQQ__Selected__c FROM SBQQ__ProductOption__c WHERE SBQQ__ConfiguredSKU__c = :productId];
+        return [SELECT Id, Name, SBQQ__OptionalSKU__c, SBQQ__ConfiguredSKU__r.Name, SBQQ__ConfiguredSKU__c, SBQQ__ProductName__c, SBQQ__Required__c, SBQQ__Selected__c FROM SBQQ__ProductOption__c WHERE SBQQ__ConfiguredSKU__c = :productId];
     }
+
+  
+    
 
     @AuraEnabled
     public static List<SBQQ__ProductOption__c> fetchSecondLevelProductOptions(Id productId) {
@@ -225,7 +237,30 @@ public with sharing class OrderForm {
         List<SBQQ__ProductOption__c> listName = [SELECT Id, Name, SBQQ__ConfiguredSKU__c, SBQQ__OptionalSKU__c FROM SBQQ__ProductOption__c WHERE id = :productId];
         system.debug('productId1' +  listName[0].SBQQ__OptionalSKU__c);
 
-        return [SELECT Id, Name, SBQQ__OptionalSKU__c, SBQQ__ConfiguredSKU__c, SBQQ__Required__c, SBQQ__Selected__c FROM SBQQ__ProductOption__c WHERE SBQQ__ConfiguredSKU__c = :listName[0].SBQQ__OptionalSKU__c];
+        return [SELECT Id, Name, SBQQ__OptionalSKU__c, SBQQ__ConfiguredSKU__r.Name, SBQQ__ConfiguredSKU__c, SBQQ__ProductName__c, SBQQ__Required__c, SBQQ__Selected__c FROM SBQQ__ProductOption__c WHERE SBQQ__ConfiguredSKU__c = :listName[0].SBQQ__OptionalSKU__c];
+    }
+
+    
+    @AuraEnabled
+    public static List<SBQQ__ProductOption__c> fetchRelatedProduct(String productDetails,  String orderFormId) {
+        Id recordId = Id.valueOf(orderFormId);
+        
+        system.debug('fetchRelatedProduct....');
+        set<Id> productIds = new set<Id>();
+        List<ProductWrapperOption> products = (List<ProductWrapperOption>) JSON.deserialize(productDetails, List<ProductWrapperOption>.class);
+
+        system.debug('productId1' +  products);
+        for (ProductWrapperOption prod : products) {
+            productIds.add(prod.sku);
+
+        }
+        system.debug('productId1' +  productIds);
+
+        
+        List<SBQQ__ProductOption__c> listName = [SELECT id, name, SBQQ__OptionalSKU__c, SBQQ__ConfiguredSKU__c, SBQQ__ProductName__c, SBQQ__Required__c, SBQQ__Selected__c FROM SBQQ__ProductOption__c WHERE SBQQ__ConfiguredSKU__c IN : productIds];
+        system.debug('productId1' +  listName);
+
+        return [SELECT id, name, SBQQ__OptionalSKU__c, SBQQ__ConfiguredSKU__r.Name, SBQQ__ConfiguredSKU__c, SBQQ__ProductName__c, SBQQ__Required__c, SBQQ__Selected__c FROM SBQQ__ProductOption__c WHERE SBQQ__ConfiguredSKU__c IN : productIds];
     }
     
     @AuraEnabled
@@ -451,6 +486,8 @@ public with sharing class OrderForm {
                 System.debug('inside..');
                 newProductRecord.Product__c = prod.sku;
                 newProductRecord.Order_Form__c = recordId;
+                newProductRecord.master_product__c = prod.master_product;
+
                 productRecordList.add(newProductRecord);
             }
             
@@ -556,7 +593,19 @@ public with sharing class OrderForm {
 		public String id;
 		public String name;
         public Boolean selected;
+        public String master_product;
     }
+
+    public class ProductOptionsWrapper {
+        public List<SBQQ__ProductOption__c> listName { get; set; }
+        public List<SBQQ__ProductOption__c> relatedProductOptions { get; set; }
+        
+        public ProductOptionsWrapper(List<SBQQ__ProductOption__c> listName, List<SBQQ__ProductOption__c> relatedProductOptions) {
+            this.listName = listName;
+            this.relatedProductOptions = relatedProductOptions;
+        }
+    }
+    
 
     @AuraEnabled(cacheable=true)
     public static List<Product2> searchProducts(String searchTerm) {

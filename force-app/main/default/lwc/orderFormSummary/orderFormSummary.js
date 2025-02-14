@@ -25,11 +25,8 @@ export default class OrderFormSummary extends LightningElement {
     };
 
     @track productOptionsUpdatedList = [];
-
     @track productData = [];
-
     @track document;
-
     @track productinfo;
 
     @track data = {
@@ -46,9 +43,6 @@ export default class OrderFormSummary extends LightningElement {
         const storedData = sessionStorage.getItem('orderFormData');
         if (storedData) {
             var parsedJson = JSON.parse(storedData);
-            // var productOptionsUpdatedList = parsedJson.productOptionsUpdatedList;
-            console.log('productOptionsUpdatedList', JSON.parse(storedData).productOptionsUpdatedList);
-            
             var customData = parsedJson.CustomerData;
             this.customer.CompanyName = customData.CompanyName;
             this.customer.PO = customData.PO;
@@ -81,7 +75,7 @@ export default class OrderFormSummary extends LightningElement {
             if (parsedJson?.productOptionsUpdatedList) {
                 this.productOptionsUpdatedList = JSON.parse(storedData).productOptionsUpdatedList;
             }
-            
+
             if (parsedJson?.documentation) {
                 this.document = JSON.parse(storedData).documentation;
             }
@@ -94,14 +88,14 @@ export default class OrderFormSummary extends LightningElement {
             step4: true,
             step5: false
         };
-        const stepUpdateEvent = new CustomEvent('stepupdate', {
+
+        const stepUpdateEvent = new CustomEvent('stepupdate',{
             detail: { staticStepStatus }
         });
 
         this.dispatchEvent(stepUpdateEvent);
 
     }
-
 
     get isProductOptionsUpdatedList() {
         return this.productOptionsUpdatedList.length === 0;
@@ -112,6 +106,6 @@ export default class OrderFormSummary extends LightningElement {
         jsonData = jsonData ? JSON.parse(jsonData) : {};
         jsonData.totalOrderSummary = this.data;
         jsonData.productData = this.productData;
-        sessionStorage.setItem('orderFormData', JSON.stringify(jsonData));
+        sessionStorage.setItem('orderFormData',JSON.stringify(jsonData));
     }
 }

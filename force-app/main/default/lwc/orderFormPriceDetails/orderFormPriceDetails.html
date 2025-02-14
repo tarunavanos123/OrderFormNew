@@ -17,7 +17,7 @@
                         <div class="slds-size_1-of-1 slds-medium-size_1-of-2">
                             <lightning-input data-pid={productInfo.index} value={productInfo.productName} variant="label-hidden" onchange={handleSearchChange}
                                 placeholder="Search for Product..."
-                                class="search-input slds-col slds-input__icon_right" type="search">
+                                class="search-input input-height slds-col slds-input__icon_right" type="search">
                             </lightning-input>
 
                             <!-- <template if:true={isLoading}>
@@ -72,25 +72,31 @@
                     <!-- <template if:false={isProductOptionsEmpty}> -->
                         <div class="slds-hide slds-col slds-p-around_small slds-p-top_none slds-m-top_large" data-firstoption={productInfo.index}>
                             <!-- <p class="slds-text-title_bold">Select Options:</p> -->
-                            <template for:each={productInfo.productOptionsList} for:item="option">
-                                <div key={option.id} class="slds-m-bottom_small">
-                                    <lightning-input type="checkbox" data-index={productInfo.index} label={option.name} checked={option.selected}
-                                        disabled={option.disabled} data-id={option.id} onchange={handleOptionChange}>
-                                    </lightning-input>
-                                </div>
-                            </template>
+                             <div class="flex-col">
+                                <template for:each={productInfo.productOptionsList} for:item="option">
+                                    <div key={option.id} class="slds-m-bottom_small">
+                                        <lightning-input type="checkbox" data-index={productInfo.index} label={option.product_name} checked={option.selected}
+                                            disabled={option.disabled} data-sku={option.master_product}  data-id={option.id} onchange={handleOptionChange}>
+                                        </lightning-input>
+                                    </div>
+                                </template>
+                             </div>
+                           
                         </div>
                     <!-- </template> -->
 
                     <!-- <template if:false={isProductOptionsEmpty2}> -->
-                        <div class="slds-hide slds-col slds-p-around_small slds-p-top_none slds-m-top_large" data-secondoption={productInfo.index}>
+                        <div class="slds-col slds-p-around_small slds-p-top_none slds-m-top_large" data-secondoption={productInfo.index}>
                             <!-- <p class="slds-text-title_bold">Select Options:</p> -->
-                            <template for:each={productInfo.secondLevelProductOptionsList} for:item="option">
-                                <div key={option.id} class="slds-m-bottom_small">
-                                    <lightning-input type="checkbox" label={option.name} data-id={option.id} checked=true disabled=true>
-                                    </lightning-input>
-                                </div>
-                            </template>
+                             <div class="flex-col">
+                                <template for:each={productInfo.secondLevelProductOptionsList} for:item="option">
+                                    <div key={option.id} class="slds-m-bottom_small">
+                                        <lightning-input type="checkbox" data-sku={option.master_product} label={option.product_name} data-id={option.Id} checked=true disabled=true>
+                                        </lightning-input>
+                                    </div>
+                                </template>
+                             </div>
+                            
                         </div>
                     <!-- </template> -->
                 </div>
@@ -157,7 +163,7 @@
                         <label><strong>Shipping Method</strong></label>
                         <div class="input-fields">
                             <lightning-combobox name="shippingMethod" value={data.selectedShippingMethod}
-                                options={shippingOptions} onchange={handleShippingChange}>
+                                options={shippingOptions} onchange={handleShippingChange} class="input-height">
                             </lightning-combobox>
                         </div>
 
@@ -188,7 +194,7 @@
                     <div class="slds-col slds-medium-size_1-of-2">
                         <label><strong>Sales Tax Rate</strong></label>
                         <div class="input-fields description">
-                            <lightning-input type="number" value={data.salesTaxRate} onchange={handleTaxChange}>
+                            <lightning-input class="input-height" type="number" value={data.salesTaxRate} onchange={handleTaxChange}>
                             </lightning-input>
                             <p class="slds-m-top_small sales-price-description">Sales tax is estimated by state. If you
                                 need a more precise percentage, you can submit this quote to an order and Customer
@@ -213,7 +219,7 @@
                         <label><strong>Discount</strong></label>
                         <div class="input-fields description">
                             <lightning-combobox name="discount" value={data.selectedDiscountPercentage}
-                                options={data.discountOptions} onchange={handleDiscountChange}>
+                                options={data.discountOptions} class="input-height" onchange={handleDiscountChange}>
                             </lightning-combobox>
                         </div>
 

@@ -4,7 +4,7 @@
         <div class="slds-p-horizontal_large">
             <lightning-progress-indicator current-step={step} type="path" variant="base" class="custom-indicatior">
                 <template for:each={status} for:item="stepItem">
-                    <lightning-progress-step onclick={handleProgress} disbaled=false key={stepItem.value}
+                    <lightning-progress-step onclick={handleProgress} ondragover={handleDragEvent} disbaled=false key={stepItem.value}
                         label={stepItem.label} value={stepItem.value}>
                     </lightning-progress-step>
                 </template>

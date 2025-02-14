@@ -31,6 +31,7 @@
     font-size: 14px;
     margin-bottom: 5px;
     padding-top: 0;
+    --lwc-borderWidthThin: 1.5px;
 }
 
 .dropdown-list {

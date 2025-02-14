@@ -23,7 +23,7 @@
 }
 
 .form-row.name-input{
-    grid-template-columns: 30% 51.5%;
+    grid-template-columns: 20% 62%;
 }
 
 
@@ -37,11 +37,18 @@
 .input-width {
     width: 85%;
     height: 30px;
+    --lwc-borderWidthThin: 1.5px;
+}
+
+textarea.input-width {
+    height: 40px;
 }
 
 .input-width-wrapper {
     width: 100%;
     height: 30px;
+    --lwc-borderWidthThin: 1.5px;
+    --lwc-sizeXSmall: 20%;
 }
 
 
@@ -99,6 +106,10 @@ lightning-card {
 
     .form-row.multiple-input{
         grid-template-columns: 48% 49%;
+    }
+
+    .form-row.name-input{
+        grid-template-columns: 20% 78%;
     }
 }
 

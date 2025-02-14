@@ -31,19 +31,19 @@
                         <template if:true={records.length}>
                             <ul class="dropdown-list slds-input">
                                 <template for:each={records} for:item="record">
-                                    <li key={record.Id} data-id={record.Id} data-name={record.Name}
-                                        data-record={record.Name} onclick={handleRecordSelect} class="dropdown-item">
+                                    <li key={record.Id} data-id={record.Id} data-name={record.First_Name__c}
+                                        data-record={record.First_Name__c} onclick={handleRecordSelect} class="dropdown-item">
                                         <article class="slds-card">
                                             <div class="slds-card__body slds-card__body_inner">
                                                 <div class="display-flex">
-                                                    <span class="slds-text-body_small"><strong>{record.Name}</strong>
+                                                    <span class="slds-text-body_small"><strong>{record.First_Name__c} {record.Last_Name__c} </strong>
                                                     </span>
                                                     <template lwc:if={record.Phone__c}>
                                                         <span class="slds-text-body_small slds-text-align_right"><strong>{record.Phone__c}</strong></span>
                                                     </template>
                                                 </div>
-                                                <template lwc:if={record.GB_Street_House_No__c}>
-                                                    <p class="slds-text-body_small">{record.GB_Street_House_No__c}</p>
+                                                <template lwc:if={record.Shipping_Street__c}>
+                                                    <p class="slds-text-body_small">{record.Shipping_Street__c}</p>
                                                 </template>
                                             </div>
                                         </article>

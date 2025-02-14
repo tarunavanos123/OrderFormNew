@@ -82,8 +82,23 @@ export default class ParentCompo extends LightningElement {
         loadStyle(this,NoHeader)
     }
 
+    handleDragEvent(event) {
+        const inCompleteStepElements = this.template.querySelector('.slds-is-incomplete.slds-is-active');
+        if (inCompleteStepElements) {
+            inCompleteStepElements.classList.remove('slds-is-active');
+        }
+        const completeStepElements = this.template.querySelector('.slds-is-complete.slds-is-active');
+        if (completeStepElements) {
+            completeStepElements.classList.remove('slds-is-active');
+        }
+        const currentElements = this.template.querySelector('.slds-is-current');
+        if (currentElements) {
+            currentElements.classList.add('slds-is-active');
+        }
+    }
 
     handleProgress(event) {
+       
         const stepValue = parseInt(event.target.value, 10);
         const keys = Object.keys(this.stepStatus);
         const value = this.stepStatus[keys[stepValue - 1]];
@@ -92,11 +107,19 @@ export default class ParentCompo extends LightningElement {
             this.step = (event.target.value).toString();
             this.updateButtonStates();
         } else {
-            const stepElements = this.template.querySelector('.slds-is-incomplete.slds-is-active');
-            if (stepElements) {
-                stepElements.classList.remove('slds-is-active');
+            const inCompleteStepElements = this.template.querySelector('.slds-is-incomplete.slds-is-active');
+            if (inCompleteStepElements) {
+                inCompleteStepElements.classList.remove('slds-is-active');
+            }
+            const completeStepElements = this.template.querySelector('.slds-is-complete.slds-is-active');
+            if (completeStepElements) {
+                completeStepElements.classList.remove('slds-is-active');
             }
 
+        }
+        const currentElements = this.template.querySelector('.slds-is-current');
+        if (currentElements) {
+            currentElements.classList.add('slds-is-active');
         }
     }
 

@@ -90,7 +90,7 @@
                             <div class="slds-truncate" title="Item #">Item #</div>
                         </th>
                         <th scope="col">
-                            <div class="slds-truncate slds-text-align_left" title="Description">Product ID</div>
+                            <div class="slds-truncate slds-text-align_left" title="Description">Product Name</div>
                         </th>
                         <th scope="col">
                             <div class="slds-truncate slds-text-align_right" title="Quantity">Quantity</div>
@@ -149,13 +149,10 @@
                         <tr>
                         
                             <th scope="col">
-                                <div class="slds-truncate" title="Description">Product ID</div>
+                                <div class="slds-truncate slds-text-align_left slds-p-vertical_small" title="Parent Product ID">Parent Product Name</div>
                             </th>
                             <th scope="col">
-                                <div class="slds-truncate" title="Quantity">Product Name</div>
-                            </th>
-                            <th scope="col">
-                                <div class="slds-truncate" title="Item #">SKU Id</div>
+                                <div class="slds-truncate slds-text-align_left slds-p-vertical_small" title="Product Name">Product Name</div>
                             </th>
                         </tr>
                         <tr>
@@ -165,21 +162,61 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <template for:each={productOptionsUpdatedList} for:item="product">
+                        <!-- <template for:each={productOptionsUpdatedList} for:item="product">
                             <tr key={product.id} class="slds-no-row-borders custom-row">
                                 <td>
-                                    <div class="slds-truncate" title={product.index}>{product.id}</div>
+                                    <div class="slds-truncate slds-text-align_left" title={product.master_product_name}>{product.master_product_name}
+                                        <template lwc:if={product.parentProduct}>
+                                            - ({product.parentProduct})
+                                        </template>
+
+                                    </div>
                                 </td>
                                 <td>
-                                    <div class="slds-truncate" title={product.description}>{product.name}</div>
+                                    <div class="slds-truncate slds-text-align_left" title={product.product_name}>{product.product_name}</div>
 
                                 </td>
-                                <td>
-                                    <div class="slds-truncate" title={product.quantity}>{product.sku}</div>
-                                </td>
-                            
                             </tr>
+                        </template> -->
+
+                        <template for:each={productData} for:item="product">
+                            
+                            <template for:each={product.productOptionsList} for:item="product">
+                                <tr key={product.id} class="slds-n.o-row-borders custom-row">
+                                    <td>
+                                        <div class="slds-truncate slds-text-align_left" title={product.master_product_name}>{product.master_product_name}
+                                            <template lwc:if={product.parentProduct}>
+                                                - ({product.parentProduct})
+                                            </template>
+
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate slds-text-align_left" title={product.product_name}>{product.product_name}</div>
+
+                                    </td>
+                                </tr>
+                            </template>
+                            <template for:each={product.secondLevelProductOptionsList} for:item="product">
+                                <tr key={product.id} class="slds-n.o-row-borders custom-row">
+                                    <td>
+                                        <div class="slds-truncate slds-text-align_left" title={product.master_product_name}>{product.master_product_name}
+                                            <template lwc:if={product.parentProduct}>
+                                                - ({product.parentProduct})
+                                            </template>
+
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate slds-text-align_left" title={product.product_name}>{product.product_name}</div>
+
+                                    </td>
+                                </tr>
+                            </template>
                         </template>
+
+
+
                     </tbody>
                 </table>
             </div>

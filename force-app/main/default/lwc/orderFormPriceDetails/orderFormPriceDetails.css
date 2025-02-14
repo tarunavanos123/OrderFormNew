@@ -13,6 +13,13 @@
     margin-top:10px
 }
 
+.flex-col {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    max-height: 150px;
+}
+
 .price-details {
     margin-left: 36px;
     font-size: 24px;
@@ -92,6 +99,10 @@ hr {
     padding-bottom: 0;
 }
 
+.search-input {
+    --lwc-borderWidthThin: 1.5px;
+}
+
 .slds-card__body {
     margin: 0;
 }
@@ -107,6 +118,7 @@ hr {
 
 .input-height {
     height: 30px;
+    --lwc-borderWidthThin: 1.5px;
 }
 
 .text-bold {

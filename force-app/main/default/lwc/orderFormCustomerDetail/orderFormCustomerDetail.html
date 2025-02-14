@@ -80,7 +80,7 @@
                     <div class="form-row name-input">
                         <div>
                             <strong>Salutation</strong>
-                            <lightning-combobox variant="label-hidden" data-id="Salutation" value={customer.Salutation}
+                            <lightning-combobox placeholder="Select" variant="label-hidden" data-id="Salutation" value={customer.Salutation}
                                 class="input-width-wrapper" options={salutationOptions} onchange={handleInputChange}
                                 readonly={isReadOnly}>
                             </lightning-combobox>
@@ -129,7 +129,7 @@
                 <template if:false={isReadOnly}>
                     <div><span class="asterisk">*</span><strong>Email</strong>
                         <lightning-input variant="label-hidden" type="email" data-id="Email" data-group="formInput"
-                            class="input-width" message-when-pattern-mismatch="Please enter a valid Email."
+                            class="email input-width" message-when-pattern-mismatch="Please enter a valid Email."
                             pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" value={customer.Email}
                             onchange={handleInputChange} required readonly={isReadOnly}>
                         </lightning-input>
@@ -144,7 +144,7 @@
                 <template if:false={isReadOnly}>
                     <div><span class="asterisk">*</span><strong>Phone</strong>
                         <lightning-input variant="label-hidden" type="tel" data-id="Phone" value={customer.Phone}
-                            class="input-width phone validate-input" placeholder="+1 123-456-7890"
+                            class="input-width phone validate-input" maxlength="15" placeholder="+1 123-456-7890"
                             message-when-pattern-mismatch="Please enter a valid Phone number." data-group="formInput"
                             pattern="^(\+\d{1,4}\s?)?(\(\d{3}\)|\d{3})([\s\-\.]?)\d{3}([\s\-\.]?)\d{4}$"
                             onchange={handleInputChange} required readonly={isReadOnly}>
@@ -159,7 +159,7 @@
                 </template>
             </div>
 
-            <!-- Row 5: Fax -->
+            <!-- Row 5: Last Name and Fax -->
             <div class="form-row">
                 <template if:false={isReadOnly}>
                     <div><strong>Fax</strong>
@@ -213,7 +213,7 @@
                         <div><span class="asterisk">*</span><strong>City</strong>
                             <lightning-input variant="label-hidden" type="text" data-id="billingCity"
                                 data-group="formInput" value={customer.BillingAddress.billingCity}
-                                class="billingAddress input-width" required onchange={handleInputChange}
+                                class="billingAddress input-width" maxlength="40" required onchange={handleInputChange}
                                 readonly={isReadOnly}>
                             </lightning-input>
                         </div>
@@ -231,13 +231,13 @@
                             <div><span class="asterisk">*</span><strong>Zip/Postal Code</strong>
                                 <lightning-input variant="label-hidden" maxlength="15" data-id="billingZipCode"
                                     type="text" data-group="formInput" value={customer.BillingAddress.billingZipCode}
-                                    class="zipcode billingAddress" required onchange={handleInputChange}>
+                                    class="zipcode input-width-wrapper billingAddress" required onchange={handleInputChange}>
                                 </lightning-input>
                             </div>
                             <div><span class="asterisk">*</span><strong>State/Province</strong>
                                 <lightning-input variant="label-hidden" data-id="billingState" type="text"
                                     data-group="formInput" value={customer.BillingAddress.billingState}
-                                    class="billingAddress" required onchange={handleInputChange}>
+                                    class="billingAddress input-width-wrapper" maxlength="40" required onchange={handleInputChange}>
                                 </lightning-input>
                             </div>
                         </template>
@@ -278,7 +278,7 @@
                         <div><span class="asterisk">*</span><strong>City</strong>
                             <lightning-input variant="label-hidden" type="text" data-id="shippingCity"
                                 value={customer.ShippingAddress.shippingCity} required data-group="formInput"
-                                class="validate-input shippingAddress input-width" onchange={handleInputChange}>
+                                class="validate-input shippingAddress input-width" maxlength="40" onchange={handleInputChange}>
                             </lightning-input>
                         </div>
                     </template>
@@ -288,14 +288,14 @@
                             <div><span class="asterisk">*</span><strong>Zip/Postal Code</strong>
                                 <lightning-input variant="label-hidden" maxlength="15" data-id="shippingZipCode"
                                     type="text" value={customer.ShippingAddress.shippingZipCode} required
-                                    data-group="formInput" class="zipcode validate-input shippingAddress"
+                                    data-group="formInput" class="zipcode validate-input shippingAddress input-width-wrapper"
                                     onchange={handleInputChange}>
                                 </lightning-input>
                             </div>
                             <div><span class="asterisk">*</span><strong>State/Province</strong>
                                 <lightning-input variant="label-hidden" data-id="shippingState" type="text"
-                                    value={customer.ShippingAddress.shippingState} required data-group="formInput"
-                                    class="validate-input shippingAddress" onchange={handleInputChange}>
+                                    value={customer.ShippingAddress.shippingState} maxlength="40" required data-group="formInput"
+                                    class="validate-input shippingAddress input-width-wrapper" onchange={handleInputChange}>
                                 </lightning-input>
                             </div>
                         </div>

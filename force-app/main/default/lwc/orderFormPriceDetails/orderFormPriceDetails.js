@@ -1,11 +1,13 @@
 import { LightningElement, track, wire } from 'lwc';
 import updateProductInfo from '@salesforce/apex/OrderForm.updateProductInfo';
 import updateProductOption from '@salesforce/apex/OrderForm.updateProductOption';
-import { ShowToastEvent } from 'lightning/platformShowToastEvent'; 
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 import fetchProduct from '@salesforce/apex/OrderForm.searchProducts';
 import fetchProductOptions from '@salesforce/apex/OrderForm.fetchProductOptions';
 import fetchSecondLevelProductOptions from '@salesforce/apex/OrderForm.fetchSecondLevelProductOptions';
+import fetchRelatedProduct from '@salesforce/apex/OrderForm.fetchRelatedProduct';
+
 
 
 export default class OrderFormPriceDetails extends LightningElement {
@@ -27,26 +29,29 @@ export default class OrderFormPriceDetails extends LightningElement {
         totalWeight: 0,
         totalProduct: 0,
         shippingMethods: [
-            { method: 'RG - Ground', description: 'RG - Ground has a 5-7 business day ETA.', price: 15.88 },
-            { method: 'Express', description: 'Express shipping delivers within 2-3 business days.', price: 30.00 },
-            { method: 'Overnight', description: 'Overnight shipping guarantees delivery by the next business day.', price: 50.00 }
+            { method: 'RG - Ground',description: 'RG - Ground has a 5-7 business day ETA.',price: 15.88 },
+            { method: 'Express',description: 'Express shipping delivers within 2-3 business days.',price: 30.00 },
+            { method: 'Overnight',description: 'Overnight shipping guarantees delivery by the next business day.',price: 50.00 }
         ],
         selectedShippingMethod: 'RG - Ground',
         shippingDescription: 'RG - Ground has a 5-7 business day ETA.',
         selectedShippingPrice: 0,
         salesTaxRate: 0.0,
         estimatedTax: 0.0,
-        discountOptions: [
-            { label: '0%', value: 0 },
-            { label: '25%', value: 25 },
-            { label: '50%', value: 50 },
-            { label: '75%', value: 75 }
-        ],
+        discountOptions: [],
         selectedDiscountPercentage: 0,
         discountAmount: 0.0,
         handlingFee: 0.0,
-        totalPrice: 0.0
+        totalPrice: 0.0,
+
+        generateDiscountOptions(n) {
+            this.discountOptions = [];
+            for (let i = 0; i <= n; i += 1) {
+                this.discountOptions.push({ label: `${i}%`,value: i });
+            }
+        }
     };
+
 
     @track selectedProduct = null; // Store selected product
     @track productOptionsList = []; // Store product options
@@ -70,17 +75,10 @@ export default class OrderFormPriceDetails extends LightningElement {
 
     connectedCallback() {
         // Retrieve JSON data from sessionStorage when the component reconnects
+        this.data.generateDiscountOptions(55);
         let length = this.productData.length + 1;
-        let newRecord = { index: length.toString(), product_id: '', productName: '', quantity: 1, subtotal: 0, actualPrice: 50, discountPrice: 0 };
-
-        this.productData = [...this.productData, newRecord];
-
-
-        // console.log('isProductOptionsEmpty', JSON.stringify(this.productOptionsList));
-        // console.log('isProductOptionsEmpty2', JSON.stringify(this.secondLevelProductOptionsList));
-
-
-
+        let newRecord = { index: length.toString(),product_id: '',productName: '',quantity: 1,subtotal: 0,actualPrice: 50,discountPrice: 0 };
+        this.productData = [...this.productData,newRecord];
         const storedData = sessionStorage.getItem('orderFormData');
         if (storedData) {
             var parsedJson = JSON.parse(storedData);
@@ -89,34 +87,30 @@ export default class OrderFormPriceDetails extends LightningElement {
             }
             if (parsedJson?.productData) {
                 this.productData = JSON.parse(storedData).productData;
-                console.log('productData', JSON.stringify(this.productData));
-                console.log('productName', JSON.stringify(this.productData[0].productName));
+                console.log('productData',JSON.stringify(this.productData));
+                // console.log('productName', JSON.stringify(this.productData[0].productName));
 
-                this.searchTerm = this.productData[0].productName;
+                if (this.productData[0] && this.productData[0].productName) {
+                    this.searchTerm = this.productData[0].productName;
+
+                }
             }
-
 
             if (parsedJson?.productOptionsUpdatedList) {
-                console.log('optionProductList');
-
                 this.productOptionsList = JSON.parse(storedData).productOptionsUpdatedList;
                 this.productOptionsUpdatedList = JSON.parse(storedData).productOptionsUpdatedList;
-
-                console.log('abc ', JSON.stringify(this.productOptionsUpdatedList));
-
             }
         }
+
         this.calculateTotalPrice();
-
         let productValidation = false;
-        console.log('productData', this.productData);
-        console.log('productData 0', this.productData[0].product_id != '');
 
-        if (this.productData.length > 0 && this.productData[0].product_id != '') {
+        if (this.productData.length > 0 && this.productData[0] && this.productData[0].product_id != '') {
             productValidation = true;
         }
+
         this.dispatchEvent(
-            new CustomEvent('productvalidation', {
+            new CustomEvent('productvalidation',{
                 detail: { productValidation }
             })
         );
@@ -128,12 +122,12 @@ export default class OrderFormPriceDetails extends LightningElement {
             step4: false,
             step5: false
         };
-        const stepUpdateEvent = new CustomEvent('stepupdate', {
+        const stepUpdateEvent = new CustomEvent('stepupdate',{
             detail: { staticStepStatus }
         });
 
         this.dispatchEvent(stepUpdateEvent);
-        document.addEventListener('click', this.handleClickOutside.bind(this));
+        document.addEventListener('click',this.handleClickOutside.bind(this));
 
     }
 
@@ -143,13 +137,10 @@ export default class OrderFormPriceDetails extends LightningElement {
             let firstIndex = product.productOptionsList && product.productOptionsList.length > 0;
             let secondIndex = product.secondLevelProductOptionsList && product.secondLevelProductOptionsList > 0;
 
-            console.log('firstIndex', firstIndex);
-            console.log('secondIndex', secondIndex);
-
             if (firstIndex) {
-                console.log(product.index);
+
                 const element = this.template.querySelector('[data-firstoption="' + product.index + '"]');
-                console.log('element', element);
+
                 if (element) {
                     element.classList.remove('slds-hide');
                 }
@@ -170,55 +161,43 @@ export default class OrderFormPriceDetails extends LightningElement {
 
         jsonData.PriceData = this.data;
         jsonData.productData = this.productData;
-        jsonData.productOptionsUpdatedList = this.productOptionsUpdatedList;
 
+        var productOptionArr = [];
 
-
-        this.productOptionsUpdatedList = this.productOptionsUpdatedList.reduce((acc, record) => {
-            if (record.array) {
-                // Add the nested array items to the main array
-                acc = acc.concat(record.array);
+        this.productData.forEach(product => {
+            if (product.productOptionsList && product.productOptionsList.length > 0) {
+                product.productOptionsList.forEach(productOption => {
+                    productOptionArr.push(productOption);
+                })
             }
-            // Add the original record without the array
-            const { array, ...rest } = record; // Remove the nested array
-            acc.push(rest);
-            return acc;
-        }, []);
+            if (product.secondLevelProductOptionsList && product.secondLevelProductOptionsList.length > 0) {
+                product.secondLevelProductOptionsList.forEach(productOption => {
+                    productOptionArr.push(productOption);
+                })
+            }
+        })
 
-        console.log('dis..', JSON.stringify(this.productOptionsUpdatedList));
-        jsonData.productOptionsUpdatedList = this.productOptionsUpdatedList;
-
-
-        updateProductOption({ productDetails: `${JSON.stringify(this.productOptionsUpdatedList)}`, orderFormId: `${jsonData.orderFormId}`, })
+        updateProductOption({ productDetails: `${JSON.stringify(productOptionArr)}`,orderFormId: `${jsonData.orderFormId}`,})
             .then(result => {
                 this.records = result;
-                console.log('optionProductApex');
-
-                sessionStorage.setItem('orderFormData', JSON.stringify(jsonData));
-
-
-            })
-            .catch(error => {
-                // jsonData.productOptionsUpdatedList = '';
-                console.error(error);
-            });
-
-
-        updateProductInfo({ productDetails: `${JSON.stringify(this.productData)}`, orderFormId: `${jsonData.orderFormId}`, })
-            .then(result => {
-                this.records = result;
-                console.log('updateProductInfoApex');
-
-                sessionStorage.setItem('orderFormData', JSON.stringify(jsonData));
-
+                sessionStorage.setItem('orderFormData',JSON.stringify(jsonData));
             })
             .catch(error => {
                 console.error(error);
             });
 
-        sessionStorage.setItem('orderFormData', JSON.stringify(jsonData));
-        document.removeEventListener('click', this.handleClickOutside.bind(this));
 
+        updateProductInfo({ productDetails: `${JSON.stringify(this.productData)}`,orderFormId: `${jsonData.orderFormId}`,})
+            .then(result => {
+                this.records = result;
+                sessionStorage.setItem('orderFormData',JSON.stringify(jsonData));
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+        sessionStorage.setItem('orderFormData',JSON.stringify(jsonData));
+        document.removeEventListener('click',this.handleClickOutside.bind(this));
     }
 
 
@@ -254,20 +233,21 @@ export default class OrderFormPriceDetails extends LightningElement {
     }
 
     handleChange(event) {
-        var duplicateError=false;
+        var duplicateError = false;
 
-        
-        for (var i=0; i< this.productData.length; i++){
-            if(this.productData[i].product_id == event.currentTarget.dataset.value && this.productData[i].index !== event.currentTarget.dataset.index){
+        for (var i = 0; i < this.productData.length; i++) {
+            if ((this.productData[i].product_id == event.currentTarget.dataset.value && !this.productData[i].productOptionsList) && this.productData[i].index !== event.currentTarget.dataset.index) {
                 duplicateError = true;
             }
         }
 
         if (duplicateError) {
-            var a =  this.template.querySelector(".search-input[data-pid='"+event.currentTarget.dataset.index+"']");
-            console.log( a);
 
-            this.template.querySelector(".search-input[data-pid='"+event.currentTarget.dataset.index+"']").value = "";
+            this.template.querySelector(".search-input[data-pid='" + event.currentTarget.dataset.index + "']").value = "";
+
+            delete this.productData[Number(event.currentTarget.dataset.index) - 1].productOptionsList;
+            delete this.productData[Number(event.currentTarget.dataset.index) - 1].secondLevelProductOptionsList;
+
             const toastEvent = new ShowToastEvent({
                 title: 'Duplicate Product',
                 message: 'This Product is already choosed. Please select another product.',
@@ -276,28 +256,26 @@ export default class OrderFormPriceDetails extends LightningElement {
                 duration: 2500 // Duration in milliseconds (2.5 seconds)
             });
             this.dispatchEvent(toastEvent);
-        }else{
+        } else {
             this.searchTerm = event.currentTarget.dataset.record;
 
             let productValidation = true;
             this.dispatchEvent(
-                new CustomEvent('productvalidation', {
+                new CustomEvent('productvalidation',{
                     detail: { productValidation }
                 })
             );
-            
-            var index = event.currentTarget.dataset.index;
 
+            var index = event.currentTarget.dataset.index;
             const newValue = event.currentTarget.dataset.record;
             this.productData[Number(index) - 1].productName = null;
             setTimeout(() => {
                 this.productData[Number(index) - 1].productName = newValue;
-              }, 0);
-            //   this.productData[Number(index) - 1].productName = event.currentTarget.dataset.record;
+            },0);
 
             this.productData[Number(index) - 1].product_id = event.currentTarget.dataset.value;
-            this.data.productCount = parseInt(this.productData[Number(index) - 1].quantity, 10);
-            this.productData[Number(index) - 1].subtotal = parseInt(this.productData[Number(index) - 1].actualPrice, 10) * parseInt(this.productData[Number(index) - 1].quantity, 10);
+            this.data.productCount = parseInt(this.productData[Number(index) - 1].quantity,10);
+            this.productData[Number(index) - 1].subtotal = parseInt(this.productData[Number(index) - 1].actualPrice,10) * parseInt(this.productData[Number(index) - 1].quantity,10);
             this.updateQtyAndPrice(this.productData);
 
             const selectedProductId = event.currentTarget.dataset.value;
@@ -307,54 +285,71 @@ export default class OrderFormPriceDetails extends LightningElement {
             const selectedProduct = this.accountOptions.find(p => p.value === selectedProductId);
             this.isRequired = selectedProduct ? selectedProduct.isRequired : false;
 
-            console.log('main..', selectedProductId);
-
-
             fetchProductOptions({ productId: selectedProductId })
                 .then((data) => {
-                    if(data.length != 0) {
+                    console.log('fetchProductOptions',JSON.stringify(data));
+                    if (data.length != 0) {
                         this.productOptionsList = data.map(option => ({
                             id: option.Id,
                             name: option.Name,
                             sku: option.SBQQ__OptionalSKU__c,
+                            master_product: option.SBQQ__ConfiguredSKU__c,
+                            product_name: option.SBQQ__ProductName__c,
+                            master_product_name: option.SBQQ__ConfiguredSKU__r.Name,
                             selected: option.SBQQ__Selected__c ? option.SBQQ__Selected__c : option.SBQQ__Required__c, // Pre-select if required
                             disabled: option.SBQQ__Required__c // Disable if required
                         }));
-                    
-                    console.log('indexxxxxxxxx00000', index);
-
-                    const element = this.template.querySelector('[data-firstoption="' + index + '"]');
-
-                    console.log('data-firstption', element);
 
 
-                    if (this.productOptionsList && this.productOptionsList.length > 0) {
-                        if (element) {
-                            element.classList.remove('slds-hide');
+                        const element = this.template.querySelector('[data-firstoption="' + index + '"]');
+
+                        if (this.productOptionsList && this.productOptionsList.length > 0) {
+                            if (element) {
+                                element.classList.remove('slds-hide');
+                            }
                         }
+                        else {
+                            if (element) {
+                                element.classList.add('slds-hide');
+                            }
+                        }
+
+                        this.productData[Number(index) - 1].productOptionsList = this.productOptionsList;
+                        this.productOptionsUpdatedList = this.productOptionsList;
+
+                        let jsonData = sessionStorage.getItem('orderFormData');
+                        jsonData = jsonData ? JSON.parse(jsonData) : {};
+
+                        fetchRelatedProduct({ productDetails: `${JSON.stringify(this.productOptionsUpdatedList)}`,orderFormId: `${jsonData.orderFormId}`,})
+                            .then(result => {
+                                this.records = result;
+                                var secondlevelresult = result.map(option => ({
+                                    id: option.Id,
+                                    name: option.Name,
+                                    sku: option.SBQQ__OptionalSKU__c,
+                                    master_product: option.SBQQ__ConfiguredSKU__c,
+                                    product_name: option.SBQQ__ProductName__c,
+                                    master_product_name: option.SBQQ__ConfiguredSKU__r.Name,
+                                    selected: option.SBQQ__Selected__c ? option.SBQQ__Selected__c : option.SBQQ__Required__c, // Pre-select if required
+                                    disabled: option.SBQQ__Required__c // Disable if required
+                                }));
+
+                                this.productData[Number(index) - 1].secondLevelProductOptionsList = secondlevelresult;
+                            })
+                            .catch(error => {
+                                console.error(error);
+                            });
                     }
                     else {
-                        if (element) {
-                            element.classList.add('slds-hide');
-                        }
+                        const element = this.template.querySelector('[data-firstoption="' + index + '"]');
+
+                        delete this.productData[Number(index) - 1].productOptionsList;
+                        delete this.productData[Number(index) - 1].secondLevelProductOptionsList;
                     }
-
-                    this.productData[Number(index) - 1].productOptionsList = this.productOptionsList;
-
-                    console.log('prodyctData',);
-
-
-                    console.log('productOptionsList', JSON.stringify(this.productOptionsList));
-                    // this.productOptionsUpdatedList = this.productOptionsList.filter(record => record.selected === true || record.disabled === true);
-                    this.productOptionsUpdatedList = this.productOptionsList;
-
-                    console.log('productOptionsUpdatedList', JSON.stringify(this.productOptionsUpdatedList));
-
                 })
                 .catch(error => {
-                    console.error('Error fetching product options:', error);
+                    console.error('Error fetching product options:',error);
                 });
-
         }
     }
 
@@ -372,62 +367,67 @@ export default class OrderFormPriceDetails extends LightningElement {
                 }
             });
 
+            this.productData.forEach((item) => {
+                if (item.product_id === sku) {
+                    item.productOptionsList.forEach((element) => {
+                        if (element.id === optionId) {
+                            element.selected = true;
+                        }
+                    })
+                }
+            });
+
             fetchSecondLevelProductOptions({ productId: optionId })
                 .then((data) => {
                     this.secondLevelProductOptionsList = data.map(option => ({
-                        id: option.Id,
-                        name: option.Name,
+                        Id: option.Id,
+                        Name: option.Name,
                         sku: option.SBQQ__OptionalSKU__c,
+                        product_name:option.SBQQ__ProductName__c,
+                        master_product_name: option.SBQQ__ConfiguredSKU__r.Name,
+                        parentProduct:this.productData[Number(index) - 1].productName,
+                        isParentProduct : this.productData[Number(index) - 1].productName != '' ? true : false,
                         selected: true
 
                     }));
 
                     this.productData[Number(index) - 1].secondLevelProductOptionsList = this.secondLevelProductOptionsList;
 
-                    console.log('secondLevelProductOptionsList', JSON.stringify(this.secondLevelProductOptionsList));
                     if (this.secondLevelProductOptionsList && this.secondLevelProductOptionsList.length > 0) {
                         const array = this.secondLevelProductOptionsList;
                         this.productOptionsUpdatedList = this.productOptionsUpdatedList.map(record =>
                             record.id === optionId
-                                ? { ...record, array }
+                                ? { ...record,array }
                                 : record
                         );
                         const element = this.template.querySelector('[data-secondoption="' + index + '"]');
-
-                        console.log('data-secondoption', element);
 
                         if (element) {
                             element.classList.remove('slds-hide');
                         }
                     }
 
-                    console.log('productOptionsUpdatedList1', JSON.stringify(this.productOptionsUpdatedList));
-
-
                 })
                 .catch(error => {
-                    console.error('Error fetching product options:', error);
+                    console.error('Error fetching product options:',error);
                 });
         } else {
-            console.log('else11..', JSON.stringify(this.productOptionsUpdatedList));
+            this.productData.forEach((item) => {
+                if (item.product_id === sku) {
+                    item.productOptionsList.forEach((element) => {
+                        if (element.id === optionId) {
+                            element.selected = false;
+                        }
+                    })
+                }
+            });
 
             this.productOptionsUpdatedList.forEach((item) => {
                 if (item.id === optionId) {
                     item.selected = false;
                 }
             });
-            // this.productOptionsUpdatedList = this.productOptionsUpdatedList.filter(record => record.id !== optionId);
-            console.log('else..', JSON.stringify(this.productOptionsUpdatedList));
-
         }
-
-
-
-
-        // Update the selected state of the option
-        // this.productOptionsList = this.productOptionsList.map(option =>
-        //     option.id === optionId ? { ...option, selected: isChecked } : option
-        // );
     }
 
     get isProductOptionsEmpty() {
@@ -439,10 +439,8 @@ export default class OrderFormPriceDetails extends LightningElement {
     }
 
     handleQtyChange(event) {
-
-
-        const min = parseInt(event.target.min, 10);
-        let value = parseInt(event.target.value, 10);
+        const min = parseInt(event.target.min,10);
+        let value = parseInt(event.target.value,10);
 
         if (!value || isNaN(value)) {
             event.target.value = 0;
@@ -455,8 +453,8 @@ export default class OrderFormPriceDetails extends LightningElement {
         var index = event.target.dataset.index;
 
         this.productData[Number(index) - 1].quantity = event.target.value;
-        this.data.productCount = parseInt(this.productData[Number(index) - 1].quantity, 10);
-        this.productData[Number(index) - 1].subtotal = parseInt(this.productData[Number(index) - 1].actualPrice, 10) * parseInt(this.productData[Number(index) - 1].quantity, 10);
+        this.data.productCount = parseInt(this.productData[Number(index) - 1].quantity,10);
+        this.productData[Number(index) - 1].subtotal = parseInt(this.productData[Number(index) - 1].actualPrice,10) * parseInt(this.productData[Number(index) - 1].quantity,10);
         this.updateQtyAndPrice(this.productData);
 
     }
@@ -465,8 +463,8 @@ export default class OrderFormPriceDetails extends LightningElement {
         var totalQuantity = 0;
         var subTotal = 0;
         products.forEach(product => {
-            totalQuantity += parseInt(product.quantity, 10);
-            subTotal += parseInt(product.subtotal, 10);
+            totalQuantity += parseInt(product.quantity,10);
+            subTotal += parseInt(product.subtotal,10);
         });
 
         this.data.productCount = totalQuantity;
@@ -476,29 +474,11 @@ export default class OrderFormPriceDetails extends LightningElement {
 
     }
 
-
     @track accountOptions = []; // To store the combobox options
-
-    // @wire(fetchProduct)
-    // wiredAccounts({ error, data }) {
-    //     if (data) {
-    //         this.accountOptions = data.map(account => ({
-    //             label: account.Name,
-    //             value: account.Id,
-    //             isRequired: account.SBQQ__ConfigurationType__c == "Required"
-    //         }));
-    //     } else if (error) {
-    //         console.error('Error fetching accounts:', error);
-    //     }
-    // }
 
     handleSearchChange(event) {
         this.searchTerm = event.target.value;
         const id = event.target.dataset.pid;
-        console.log('id', id);
-
-
-
 
         if (this.searchTerm.length > 2) {
             this.searchRecords(id);
@@ -508,68 +488,58 @@ export default class OrderFormPriceDetails extends LightningElement {
     }
 
     searchRecords(id) {
-        // this.isLoading = true;
         fetchProduct({ searchTerm: `%${this.searchTerm}%` })
             .then(result => {
                 this.records = result;
-
-                // this.isLoading = false;
                 this.isDropdownVisible = true;
-                console.log('idd', id);
-
-                // const element = this.template.querySelector('#' + id);
                 const element = this.template.querySelector('[data-pidd="' + id + '"]');
-
-                console.log('element', element);
 
                 if (element) {
                     element.classList.remove('slds-hide');
-
                 }
             })
             .catch(error => {
-                // this.isLoading = false;
                 console.error(error);
             });
     }
 
-
     handleClickOutside() {
         this.isDropdownVisible = false;
         const elements = this.template.querySelectorAll('.search-input.dropdown');
-        console.log('Selected Elements:', elements);
 
         elements.forEach(element => {
             element.classList.add('slds-hide');
         });
     }
 
-
     get productQuantity() {
         return [
-            { label: '1', value: 1 },
-            { label: '2', value: 2 },
-            { label: '3', value: 3 },
+            { label: '1',value: 1 },
+            { label: '2',value: 2 },
+            { label: '3',value: 3 },
         ];
     }
 
     addProduct() {
-
         let length = this.productData.length + 1;
-        let newRecord = { index: length.toString(), product_id: '', productName: '', quantity: 1, subtotal: 0, actualPrice: 50, discountPrice: 0 };
+        let newRecord = { index: length.toString(),product_id: '',productName: '',quantity: 1,subtotal: 0,actualPrice: 50,discountPrice: 0 };
 
-        this.productData = [...this.productData, newRecord];
+        this.productData = [...this.productData,newRecord];
 
+        let productValidation = false;
+        this.dispatchEvent(
+            new CustomEvent('productvalidation',{
+                detail: { productValidation }
+            })
+        );
     }
 
     handleCross(event) {
         const indexValue = event.target.dataset.index;
-        const productId = event.target.dataset.id;
-
 
         this.productData = this.productData
             .filter(item => item.index !== indexValue)
-            .map((item, index) => ({ ...item, index: (index + 1).toString() }));
+            .map((item,index) => ({ ...item,index: (index + 1).toString() }));
         this.updateQtyAndPrice(this.productData);
 
         let productValidation = false;
@@ -577,11 +547,9 @@ export default class OrderFormPriceDetails extends LightningElement {
             productValidation = true;
         }
         this.dispatchEvent(
-            new CustomEvent('productvalidation', {
+            new CustomEvent('productvalidation',{
                 detail: { productValidation }
             })
         );
-
-
     }
 }

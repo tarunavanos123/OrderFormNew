@@ -1,14 +1,17 @@
 public without sharing class AccountRecordPicker {
     @AuraEnabled
     public static List<SAP_Account__c> searchAccounts(String searchTerm) {
-        String query = 'SELECT Id, Name, GB_SAP_Account_Number__c, GB_Street_House_No__c, GB_Street_2__c, Phone__c FROM SAP_Account__c WHERE ';
+        String query = 'SELECT Id, Name, Phone__c, First_Name__c, Last_Name__c, SAP_Account_Number__c, Shipping_Street__c, Billing_Street__c  FROM Order_Form__c WHERE ';
+
         List<String> conditions = new List<String>();
 
         if (!String.isEmpty(searchTerm)) {
             conditions.add('Name LIKE :searchTerm');
-            conditions.add('GB_SAP_Account_Number__c LIKE :searchTerm');
-            conditions.add('GB_Street_House_No__c LIKE :searchTerm');
-            conditions.add('GB_Street_2__c LIKE :searchTerm');
+            conditions.add('SAP_Account_Number__c LIKE :searchTerm');
+            conditions.add('Last_Name__c LIKE :searchTerm');
+            conditions.add('First_Name__c LIKE :searchTerm');
+            conditions.add('Shipping_Street__c LIKE :searchTerm');
+            conditions.add('Billing_Street__c LIKE :searchTerm');
             conditions.add('Phone__c LIKE :searchTerm');
         }
 
