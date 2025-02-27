@@ -25,7 +25,7 @@ export default class Footer extends LightningElement {
         submitOrderForm({ orderFormId: `${orderFormId}` })
             .then(result => {
                 this.records = result;
-                if (jsonData.CustomerData.Email) {
+                if (jsonData.CustomerData.Email && !(window.location.href.includes('orderhistory'))) {
                     sendMail({ address: jsonData.CustomerData.Email.toString(),subject: 'Order Confirmation and Payment Link',recordID: orderFormId,token: result });
                 }
 

@@ -100,7 +100,12 @@ export default class CustomerPage extends LightningElement {
     // Handle record selection
     handleRecordSelect(event) {
         const record = event.currentTarget.dataset.id;
-        const recordName = event.currentTarget.dataset.record
+
+    const firstName = event.currentTarget.dataset.record || '';
+        const lastName = event.currentTarget.dataset.lastname || '';
+    
+        const recordName = firstName + ' ' + lastName;
+
         this.searchTerm = recordName;
         let jsonData = sessionStorage.getItem('orderFormData');
         jsonData = jsonData ? JSON.parse(jsonData) : {};

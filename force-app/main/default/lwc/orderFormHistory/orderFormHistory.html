@@ -1,0 +1,90 @@
+<template>
+    <template if:true={orderHistoryPage}>
+
+        <!-- Search Input -->
+        <lightning-input type="search" label="Search"
+            placeholder="Search by Name..."
+            onchange={handleSearch}
+            class="slds-p-vertical_small slds-size_3-of-12 slds-m-vertical_medium">
+        </lightning-input>
+
+        <lightning-datatable key-field="id" data={displayedRecords} columns={columns} min-column-width="200"
+            hide-checkbox-column
+            onrowaction={handleRowAction}>
+        </lightning-datatable>
+
+        <template if:true={showBar}>
+            <div style="background: rgb(243, 243, 243);height:50px;margin-top:5px;">        
+                <div class="slds-grid" style="height:4em;float: right;">
+                    <button class="slds-button slds-button_icon icon_button icon_button_disabled" title="First" role="first" onclick={handleFirst} disabled={first}>
+                        <svg viewBox="0 0 1024 1024" class="icon">
+                            <g><path d="M1024 1024 256 512 1024 0Z"  /><path d="M0 128l256 0 0 768-256 0 0-768Z"  /></g>
+                        </svg>  
+                    </button>
+                    <button class="slds-button slds-button_icon icon_button icon_button_disabled" title="Previous" role="previous" onclick={handlePreviousPagination} disabled={first}>
+                        <svg viewBox="0 0 1024 1024" class="icon">
+                            <g><path d="M1024 1024 256 512 1024 0Z"  /></g>
+                        </svg>
+                    </button>
+                    <span class="vcenter currentpage">{currentPage}</span>
+                    <span class="vcenter" style="font-weight: 500;">&nbsp;/&nbsp;{totalPages}</span>
+                    <button class="slds-button slds-button_icon icon_button" title="Next" role="next" onclick={handleNextPagination} disabled={last}>
+                        <svg viewBox="0 0 1024 1024" class="icon">
+                            <g><path d="M0 0 768 512 0 1024Z"  /></g>
+                        </svg>
+                    </button>
+                    <button class="slds-button slds-button_icon icon_button" title="Last" role="last" onclick={handleLast} disabled={last}>
+                        <svg viewBox="0 0 1024 1024" class="icon">
+                            <g><path d="M0 0 768 512 0 1024Z"  /><path d="M768 128l256 0 0 768-256 0 0-768Z"  /></g>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </template>   
+    </template>
+
+
+    <template if:true={orderDetailPage}>
+        <lightning-card class="slds-m-around_small slds-p-horizontal_large">
+       
+            <template if:true={isStep2}>
+            <div class="slds-clearfix">
+                <div class="slds-float_right slds-p-around_medium">
+                    <lightning-button label="Resend Mail" data-orderid={currentRecord} onclick={handleClick}></lightning-button>
+                </div>    
+            </div>
+            </template>
+
+
+
+            <div class="slds-p-horizontal_large">
+                <lightning-progress-indicator current-step={step} type="path" variant="base" class="custom-indicatior">
+                    <template for:each={status} for:item="stepItem">
+                        <lightning-progress-step onclick={handleProgress} disbaled=false key={stepItem.value}
+                            label={stepItem.label} value={stepItem.value}>
+                        </lightning-progress-step>
+                    </template>
+                </lightning-progress-indicator>
+            </div>
+
+            <template if:true={isStep2}>
+                <c-order-form-customer-detail onformvalidation={handleFormValidation} currentrecord={currentRecordID}
+                    onstepupdate={handleStatuses}></c-order-form-customer-detail>
+            </template>
+            <template if:true={isStep3}>
+                <c-order-form-price-details onproductvalidation={handleProductValidation}
+                    onstepupdate={handleStatuses}></c-order-form-price-details>
+            </template>
+            <template if:true={isStep4}>
+                <c-order-form-upload-document onstepupdate={handleStatuses}></c-order-form-upload-document>
+            </template>
+            <template if:true={isStep5}>
+                <c-order-form-summary onstepupdate={handleStatuses}></c-order-form-summary>
+            </template>
+
+            <c-order-form-footer onprevious={handlePrevious} first={isStep1} step={isStep5} onnext={handleNext}
+                isbuttondisabled={isButtonDisable} istoshow={isToShow} onconfirmation={handleConfirmation}
+                isnextbuttondisabled={isNextButtonDisabled}></c-order-form-footer>
+        </lightning-card>
+    </template>
+</template>
