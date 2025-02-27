@@ -26,7 +26,7 @@ const FIELDS = [
 export default class CustomerForm extends LightningElement {
 
     @track customer = {
-        SAPAccount: false,
+        //SAPAccount: false,
         CompanyName: '',
         PO: '',
         CustomerTradeClass: '',
@@ -59,8 +59,8 @@ export default class CustomerForm extends LightningElement {
 
 
     customerTradeClassOptions = [
-        { label: 'Individual',value: 'Individual' },
-        { label: 'Business',value: 'Business' }
+        { label: 'List Pricing',value: 'List Pricing' },
+        { label: 'Government Pricing',value: 'Government Pricing' }
     ];
 
     salutationOptions = [
@@ -105,9 +105,9 @@ export default class CustomerForm extends LightningElement {
             if (parsedJson?.CustomerData) {
                 this.customer = parsedJson.CustomerData;
             }
-            if (this.customer.SAPAccount) {
-                this.isReadOnly = true;
-            }
+            // if (this.customer.SAPAccount) {
+            //     this.isReadOnly = true;
+            // }
         }
 
         // change this JSON if we want to update the click of progress indicator on each step

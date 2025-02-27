@@ -201,7 +201,6 @@ export default class OrderFormPriceDetails extends LightningElement {
     }
 
 
-
     handleShippingChange(event) {
         const selectedMethod = event.detail.value;
         const shippingMethod = this.data.shippingMethods.find((method) => method.method === selectedMethod);
@@ -260,6 +259,16 @@ export default class OrderFormPriceDetails extends LightningElement {
             this.searchTerm = event.currentTarget.dataset.record;
 
             let productValidation = true;
+
+            const quantityInputs = this.template.querySelectorAll('.quantity');
+
+            quantityInputs.forEach(input => {
+                if (input.value == 0) {
+                    productValidation = false;
+                }
+            });
+
+
             this.dispatchEvent(
                 new CustomEvent('productvalidation',{
                     detail: { productValidation }
@@ -427,6 +436,12 @@ export default class OrderFormPriceDetails extends LightningElement {
                     item.selected = false;
                 }
             });
+
+            const element = this.template.querySelector('[data-secondoption="' + index + '"]');
+
+            if (element) {
+                element.classList.add('slds-hide');
+            }
         }
     }
 
@@ -451,6 +466,21 @@ export default class OrderFormPriceDetails extends LightningElement {
         }
 
         var index = event.target.dataset.index;
+        let productValidation = true;
+        
+        const quantityInputs = this.template.querySelectorAll('.quantity');
+
+        quantityInputs.forEach(input => {
+            if (input.value == 0) {
+                productValidation = false;
+            }
+        });
+
+        this.dispatchEvent(
+            new CustomEvent('productvalidation', {
+                detail: { productValidation }
+            })
+        );
 
         this.productData[Number(index) - 1].quantity = event.target.value;
         this.data.productCount = parseInt(this.productData[Number(index) - 1].quantity,10);
@@ -477,6 +507,12 @@ export default class OrderFormPriceDetails extends LightningElement {
     @track accountOptions = []; // To store the combobox options
 
     handleSearchChange(event) {
+
+        if (event.target.value == "" || event.target.value == null) {
+            var index = event.currentTarget.dataset.pid;
+            this.productData[Number(index) - 1].quantity = 1;
+        }else{
+
         this.searchTerm = event.target.value;
         const id = event.target.dataset.pid;
 
@@ -485,6 +521,7 @@ export default class OrderFormPriceDetails extends LightningElement {
         } else {
             this.records = [];
         }
+    }
     }
 
     searchRecords(id) {
@@ -512,19 +549,21 @@ export default class OrderFormPriceDetails extends LightningElement {
         });
     }
 
+
     get productQuantity() {
         return [
-            { label: '1',value: 1 },
-            { label: '2',value: 2 },
-            { label: '3',value: 3 },
+            { label: '1', value: 1 },
+            { label: '2', value: 2 },
+            { label: '3', value: 3 },
         ];
     }
 
     addProduct() {
-        let length = this.productData.length + 1;
-        let newRecord = { index: length.toString(),product_id: '',productName: '',quantity: 1,subtotal: 0,actualPrice: 50,discountPrice: 0 };
 
-        this.productData = [...this.productData,newRecord];
+        let length = this.productData.length + 1;
+        let newRecord = { index: length.toString(), product_id: '', productName: '', quantity: 1, subtotal: 0, actualPrice: 50, discountPrice: 0 };
+
+        this.productData = [...this.productData, newRecord];
 
         let productValidation = false;
         this.dispatchEvent(
@@ -537,9 +576,10 @@ export default class OrderFormPriceDetails extends LightningElement {
     handleCross(event) {
         const indexValue = event.target.dataset.index;
 
+
         this.productData = this.productData
             .filter(item => item.index !== indexValue)
-            .map((item,index) => ({ ...item,index: (index + 1).toString() }));
+            .map((item, index) => ({ ...item, index: (index + 1).toString() }));
         this.updateQtyAndPrice(this.productData);
 
         let productValidation = false;
@@ -547,9 +587,11 @@ export default class OrderFormPriceDetails extends LightningElement {
             productValidation = true;
         }
         this.dispatchEvent(
-            new CustomEvent('productvalidation',{
+            new CustomEvent('productvalidation', {
                 detail: { productValidation }
             })
         );
+
+
     }
 }

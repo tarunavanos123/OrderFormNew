@@ -1,6 +1,6 @@
 public without sharing class AccountRecordPicker {
     @AuraEnabled
-    public static List<SAP_Account__c> searchAccounts(String searchTerm) {
+    public static List<Order_Form__c> searchAccounts(String searchTerm) {
         String query = 'SELECT Id, Name, Phone__c, First_Name__c, Last_Name__c, SAP_Account_Number__c, Shipping_Street__c, Billing_Street__c  FROM Order_Form__c WHERE ';
 
         List<String> conditions = new List<String>();
@@ -17,7 +17,7 @@ public without sharing class AccountRecordPicker {
 
         if (!conditions.isEmpty()) {
             query += String.join(conditions, ' OR ');  // OR to match any of the fields
-        }
+        }   
 
         return Database.query(query);
     }

@@ -1,0 +1,43 @@
+.border article {
+    outline: 1px solid rgb(201, 201, 201);
+}
+
+.custom-indicatior {
+    --lwc-colorBackgroundPathCurrent: #4bca81;
+    --lwc-colorBackgroundPathCurrentHover: #4bca81;
+    --lwc-colorBackgroundPathIncomplete: #4bca81;
+    --lwc-colorBackgroundPathIncompleteHover: #4bca81;
+    --lwc-colorBackgroundPathComplete: #4bca81;
+    --lwc-colorBackgroundPathCompleteHover: #33985e;
+    --lwc-colorBackgroundPathActiveHover: #c9c9c9;
+    --lwc-progressColorBorderActive: blue;
+    --lwc-colorBackgroundPathActive: white;
+    --lwc-colorTextPathCurrent: black;
+    --lwc-colorBorderPathCurrentHover:#c9c9c9;
+}
+
+.icon {
+    width: 1em; 
+    height:1em;
+    fill: rgb(116, 116, 116);
+}
+.icon_button {
+    width: 2em; 
+    height:2em;
+    margin:auto 5px auto 5px;
+}
+.vcenter {
+    margin:auto 5px auto 5px;
+}
+.currentpage {
+    font-weight: 500;
+    width: 30px;
+    border: rgb(116, 116, 116) 1px solid;
+    text-align: center;
+}
+.icon_button_disabled{
+    cursor:auto;
+}
+.icon_button_disabled .icon{
+    fill: #e5e5e5;
+}

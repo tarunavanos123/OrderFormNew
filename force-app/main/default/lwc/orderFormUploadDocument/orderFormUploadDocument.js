@@ -74,9 +74,9 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
 
     async handleUploadFinished(event) {
         let jsonData = sessionStorage.getItem('orderFormData');
+        jsonData = jsonData ? JSON.parse(jsonData) : {};
 
-        if (jsonData) {
-            jsonData = jsonData ? JSON.parse(jsonData) : {};
+        if (jsonData.documentation) {
             this.data = jsonData.documentation;
         }
 
@@ -93,21 +93,21 @@ export default class UploadFiles extends NavigationMixin(LightningElement) {
             if (event.target.dataset.attachmenttype == 'Prescription') {
                 this.prescriptionFiles = event.detail.files
                 await refreshApex(this.wiredPrescriptionResult);
-                if (jsonData) {
+                if (jsonData.documentation) {
                     this.data.prescriptionFiles = this.prescriptionFiles;
                     jsonData.documentation = this.data;
                 }
             } else if (event.target.dataset.attachmenttype == 'Discount Document') {
                 this.discountFiles = event.detail.files
                 await refreshApex(this.wiredDiscountResult);
-                if (jsonData) {
+                if (jsonData.documentation) {
                     this.data.discountFiles = this.discountFiles
                     jsonData.documentation = this.data;
                 }
             } else if (event.target.dataset.attachmenttype == 'Tax Exemption Certificate') {
                 this.taxExemptFiles = event.detail.files
                 await refreshApex(this.wiredTaxResult);
-                if (jsonData) {
+                if (jsonData.documentation) {
                     this.data.taxExemptFiles = this.taxExemptFiles
                     jsonData.documentation = this.data;
                 }

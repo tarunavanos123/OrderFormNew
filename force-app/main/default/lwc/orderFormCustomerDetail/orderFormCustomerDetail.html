@@ -5,9 +5,9 @@
             <!-- Row 1: Company Name and PO # -->
             <div class="form-row">
                 <template if:false={isReadOnly}>
-                    <div><strong>Price Tier</strong>
-                        <lightning-combobox variant="label-hidden" placeholder="Select Customer Trade Class"
-                            class="input-width" data-id="CustomerTradeClass" value={customer.CustomerTradeClass}
+                    <div><span class="asterisk">*</span><strong>Price Tier</strong>
+                        <lightning-combobox variant="label-hidden" placeholder="Select Price Tier"
+                            class="input-width" data-group="formInput" required="true" data-id="CustomerTradeClass" value={customer.CustomerTradeClass}
                             options={customerTradeClassOptions} onchange={handleInputChange} readonly={isReadOnly}>
                         </lightning-combobox>
                     </div>

@@ -89,7 +89,7 @@ public with sharing class OrderForm {
                 Salutation__c,
                 PO__c,
                 Fax__c,
-                SAP_Account__c,
+                SAP_Account_Number__c,
                 (SELECT
                     Id,
                     Product__c,
@@ -135,7 +135,7 @@ public with sharing class OrderForm {
             wrapper.salutation = orderForm.Salutation__c;
             wrapper.PO = orderForm.PO__c;
             wrapper.fax = orderForm.Fax__c;
-            wrapper.SAPAccount = orderForm.SAP_Account__c;
+            wrapper.SAPAccountNumber = '1234567890'; //SAP_Account_Number__c
             
             // Add product details
             wrapper.products = new List<OrderProductWrapper>();
@@ -197,7 +197,7 @@ public with sharing class OrderForm {
         @AuraEnabled public String salutation { get; set; }
         @AuraEnabled public String PO { get; set; }
         @AuraEnabled public String fax { get; set; }
-        @AuraEnabled public String SAPAccount { get; set; }
+        @AuraEnabled public String SAPAccountNumber { get; set; }
         @AuraEnabled public List<OrderProductWrapper> products { get; set; } // List of products
 
     }
@@ -341,10 +341,11 @@ public with sharing class OrderForm {
             system.debug('billi' + BillingState + '' + BillingStreet + '' + BillingZipCode);
 
             if (!isOrderAlreadyCreated) {
+                system.debug('if');
                 Order_Form__c orderFormRecord = new Order_Form__c();
-                if (recordId != null) {
-                    orderFormRecord.SAP_Account__c = recordId;
-                }
+                system.debug('recordId' + customerId);
+
+                orderFormRecord.SAP_Account_Number__c = '1234567890';
 
                 orderFormRecord.Customer_Type__c = customerType;
                 orderFormRecord.Customer_Trade_Class__c = CustomerTradeClass;
@@ -373,15 +374,17 @@ public with sharing class OrderForm {
                 } catch (DmlException ex) {
                     system.debug(ex);
                 }
+                System.debug('id' + orderFormRecord.id);
+
                 return orderFormRecord.id;
 
             } else {
 
-                List<Order_Form__c> orderForm = [Select SAP_Account__c, Customer_Type__c, Customer_Trade_Class__c, PO__c, Company_Name__c,
+                List<Order_Form__c> orderForm = [Select SAP_Account_Number__c, Customer_Type__c, Customer_Trade_Class__c, PO__c, Company_Name__c,
                 Without_Rx__c, Salutation__c, First_Name__c, Last_Name__c, Email__c, Phone__c, Fax__c, Shipping_State__c,
                 Shipping_Street__c,  Shipping_Zip_Postal_Code__c, Shipping_City__c , Billing_State__c,Billing_Street__c, Billing_Zip_Postal_Code__c,Billing_City__c from Order_Form__c   where id =: orderFormId];
 
-                orderForm[0].SAP_Account__c = recordId;
+                orderForm[0].SAP_Account_Number__c = '1234567890';
                 orderForm[0].Customer_Type__c = customerType;
                 orderForm[0].Customer_Trade_Class__c = CustomerTradeClass;
                 orderForm[0].PO__c = po;
@@ -408,6 +411,7 @@ public with sharing class OrderForm {
                     update orderForm;
                 } catch (DmlException ex) {
                 }
+                System.debug('id' + orderForm[0].id);
 
                 return orderForm[0].id;
 

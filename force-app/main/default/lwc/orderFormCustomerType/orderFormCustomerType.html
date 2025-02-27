@@ -32,7 +32,7 @@
                             <ul class="dropdown-list slds-input">
                                 <template for:each={records} for:item="record">
                                     <li key={record.Id} data-id={record.Id} data-name={record.First_Name__c}
-                                        data-record={record.First_Name__c} onclick={handleRecordSelect} class="dropdown-item">
+                                        data-record={record.First_Name__c} data-lastname={record.Last_Name__c} onclick={handleRecordSelect} class="dropdown-item">
                                         <article class="slds-card">
                                             <div class="slds-card__body slds-card__body_inner">
                                                 <div class="display-flex">
